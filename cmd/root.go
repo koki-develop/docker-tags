@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -43,6 +45,18 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 		defer resp.Body.Close()
+
+		switch resp.StatusCode {
+		case http.StatusOK:
+		case http.StatusNotFound:
+			return errors.New("Resource not found")
+		default:
+			b, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return err
+			}
+			return fmt.Errorf("Request error: %s", string(b))
+		}
 
 		var ts Tags
 		if err := json.NewDecoder(resp.Body).Decode(&ts); err != nil {
