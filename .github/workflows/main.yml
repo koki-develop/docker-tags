@@ -1,0 +1,23 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        golang: ["1.16", "1.17"]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: setup golang v${{ matrix.golang }}
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.golang }}
+          cache: true
+      - name: test
+        run: go test ./...
