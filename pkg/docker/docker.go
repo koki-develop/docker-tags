@@ -45,6 +45,7 @@ func (c *Client) FetchTags(img string) (Tags, error) {
 
 	switch resp.StatusCode {
 	case http.StatusOK:
+		// pass
 	case http.StatusNotFound:
 		return nil, errors.New("resource not found")
 	default:
