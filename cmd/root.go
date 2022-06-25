@@ -1,23 +1,12 @@
 package cmd
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
-	"io"
-	"net/http"
-	"net/url"
 	"os"
-	"path"
 
+	"github.com/koki-develop/docker-tags/pkg/docker"
+	"github.com/koki-develop/docker-tags/pkg/report"
 	"github.com/spf13/cobra"
 )
-
-type Tag struct {
-	Name string `json:"name"`
-}
-
-type Tags []*Tag
 
 var rootCmd = &cobra.Command{
 	Use:  "docker-tags IMAGE",
@@ -29,51 +18,17 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		u, err := url.ParseRequestURI("https://registry.hub.docker.com/v1/repositories")
+		c := docker.NewClient()
+		tags, err := c.FetchTags(img)
 		if err != nil {
 			return err
 		}
-		u.Path = path.Join(u.Path, img, "tags")
 
-		c := new(http.Client)
-		req, err := http.NewRequest(http.MethodGet, u.String(), nil)
-		if err != nil {
-			return err
-		}
-		resp, err := c.Do(req)
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-
-		switch resp.StatusCode {
-		case http.StatusOK:
-		case http.StatusNotFound:
-			return errors.New("Resource not found")
-		default:
-			b, err := io.ReadAll(resp.Body)
-			if err != nil {
-				return err
-			}
-			return fmt.Errorf("Request error: %s", string(b))
-		}
-
-		var ts Tags
-		if err := json.NewDecoder(resp.Body).Decode(&ts); err != nil {
-			return err
-		}
-
-		if ot {
-			for _, t := range ts {
-				fmt.Println(t.Name)
-			}
-		} else {
-			for _, t := range ts {
-				fmt.Printf("%s:%s\n", img, t.Name)
-			}
-		}
-
-		return nil
+		r := report.New(&report.Options{
+			Writer:   os.Stdout,
+			OnlyTags: ot,
+		})
+		return r.Print(img, tags)
 	},
 }
 
