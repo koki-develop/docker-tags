@@ -2,21 +2,25 @@ package ecr
 
 import (
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ecr"
 )
 
 type Client struct {
-	region string
+	profile string
+	region  string
 }
 
 type Config struct {
-	Region string
+	Profile string
+	Region  string
 }
 
 func New(cfg *Config) *Client {
 	return &Client{
-		region: cfg.Region,
+		profile: cfg.Profile,
+		region:  cfg.Region,
 	}
 }
 
@@ -24,6 +28,9 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 	cfg := &aws.Config{}
 	if cl.region != "" {
 		cfg.Region = &cl.region
+	}
+	if cl.profile != "" {
+		cfg.Credentials = credentials.NewSharedCredentials("", cl.profile)
 	}
 
 	sess, err := session.NewSession(cfg)

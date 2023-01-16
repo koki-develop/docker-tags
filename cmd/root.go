@@ -21,7 +21,8 @@ var (
 )
 
 var (
-	awsRegion string
+	awsProfile string
+	awsRegion  string
 )
 
 func newClient(domain string) (client, error) {
@@ -30,7 +31,8 @@ func newClient(domain string) (client, error) {
 		return docker.New(), nil
 	case strings.HasSuffix(domain, "amazonaws.com"):
 		return ecr.New(&ecr.Config{
-			Region: awsRegion,
+			Profile: awsProfile,
+			Region:  awsRegion,
 		}), nil
 	default:
 		return nil, fmt.Errorf("unsupported image repository: %s", domain)
@@ -78,5 +80,6 @@ func Execute() {
 }
 
 func init() {
+	rootCmd.Flags().StringVar(&awsProfile, "aws-profile", "", "AWS Profile")
 	rootCmd.Flags().StringVar(&awsRegion, "aws-region", "", "AWS Region")
 }
