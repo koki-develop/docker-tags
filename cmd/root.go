@@ -23,8 +23,9 @@ func newClient(domain string) (client, error) {
 }
 
 var rootCmd = &cobra.Command{
-	Use:  "docker-tags",
-	Args: cobra.MinimumNArgs(1),
+	Use:   "docker-tags [IMAGE]",
+	Short: "Command line tool to get a list of tags for docker images.",
+	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		img := args[0]
 
