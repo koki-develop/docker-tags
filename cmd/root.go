@@ -80,6 +80,6 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().StringVar(&awsProfile, "aws-profile", "", "AWS Profile")
-	rootCmd.Flags().StringVar(&awsRegion, "aws-region", "", "AWS Region")
+	rootCmd.Flags().StringVar(&awsProfile, "aws-profile", "", "aws profile")
+	rootCmd.Flags().StringVar(&awsRegion, "aws-region", "", "aws region")
 }
