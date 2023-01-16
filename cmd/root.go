@@ -8,6 +8,7 @@ import (
 	"github.com/distribution/distribution/reference"
 	"github.com/koki-develop/docker-tags/pkg/docker"
 	"github.com/koki-develop/docker-tags/pkg/ecr"
+	"github.com/koki-develop/docker-tags/pkg/gcr"
 	"github.com/spf13/cobra"
 )
 
@@ -29,6 +30,8 @@ func newClient(domain string) (client, error) {
 	switch {
 	case domain == "docker.io":
 		return docker.New(), nil
+	case domain == "gcr.io":
+		return gcr.New(), nil
 	case strings.HasSuffix(domain, "amazonaws.com"):
 		return ecr.New(&ecr.Config{
 			Profile: awsProfile,
