@@ -9,6 +9,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type client interface {
+	ListTags(name string) ([]string, error)
+}
+
+func newClient(domain string) (client, error) {
+	switch {
+	case domain == "docker.io":
+		return docker.New(), nil
+	default:
+		return nil, fmt.Errorf("unsupported image repository: %s", domain)
+	}
+}
+
 var rootCmd = &cobra.Command{
 	Use:  "docker-tags",
 	Args: cobra.MinimumNArgs(1),
@@ -17,24 +30,24 @@ var rootCmd = &cobra.Command{
 
 		named, err := reference.ParseNormalizedNamed(img)
 		if err != nil {
-			return nil
+			return err
 		}
 
-		domain := reference.Domain(named)
-		name := reference.Path(named)
+		d := reference.Domain(named)
+		p := reference.Path(named)
 
-		switch domain {
-		case "docker.io":
-			cl := docker.New()
-			tags, err := cl.ListTags(name)
-			if err != nil {
-				return err
-			}
-			for _, t := range tags {
-				fmt.Println(t)
-			}
-		default:
-			return fmt.Errorf("unsupported image repository: %s", domain)
+		cl, err := newClient(d)
+		if err != nil {
+			return err
+		}
+
+		tags, err := cl.ListTags(p)
+		if err != nil {
+			return err
+		}
+
+		for _, t := range tags {
+			fmt.Println(t)
 		}
 
 		return nil
