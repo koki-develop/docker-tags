@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/distribution/distribution/reference"
+	"github.com/koki-develop/docker-tags/pkg/docker"
 	"github.com/spf13/cobra"
 )
 
@@ -14,19 +15,26 @@ var rootCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		img := args[0]
 
-		name, err := reference.ParseNormalizedNamed(img)
+		named, err := reference.ParseNormalizedNamed(img)
 		if err != nil {
 			return nil
 		}
 
-		d := reference.Domain(name)
-		p := reference.Path(name)
+		domain := reference.Domain(named)
+		name := reference.Path(named)
 
-		switch d {
+		switch domain {
 		case "docker.io":
-			fmt.Println(d, p)
+			cl := docker.New()
+			tags, err := cl.ListTags(name)
+			if err != nil {
+				return err
+			}
+			for _, t := range tags {
+				fmt.Println(t)
+			}
 		default:
-			return fmt.Errorf("unsupported image repository: %s", d)
+			return fmt.Errorf("unsupported image repository: %s", domain)
 		}
 
 		return nil
