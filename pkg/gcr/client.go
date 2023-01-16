@@ -20,7 +20,11 @@ func New() *Client {
 }
 
 type listTagsResponse struct {
-	Tags []string `json:"tags"`
+	Manifest map[string]manifest `json:"manifest"`
+}
+
+type manifest struct {
+	Tag []string `json:"tag"`
 }
 
 func (cl *Client) ListTags(name string) ([]string, error) {
@@ -54,5 +58,10 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 		return nil, err
 	}
 
-	return tagsResp.Tags, nil
+	tags := []string{}
+	for _, m := range tagsResp.Manifest {
+		tags = append(tags, m.Tag...)
+	}
+
+	return tags, nil
 }
