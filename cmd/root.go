@@ -19,7 +19,15 @@ var rootCmd = &cobra.Command{
 			return nil
 		}
 
-		fmt.Printf("%#v\n", name)
+		d := reference.Domain(name)
+		p := reference.Path(name)
+
+		switch d {
+		case "docker.io":
+			fmt.Println(d, p)
+		default:
+			return fmt.Errorf("unsupported image repository: %s", d)
+		}
 
 		return nil
 	},
