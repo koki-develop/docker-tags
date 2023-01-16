@@ -20,12 +20,18 @@ var (
 	_ client = (*ecr.Client)(nil)
 )
 
+var (
+	awsRegion string
+)
+
 func newClient(domain string) (client, error) {
 	switch {
 	case domain == "docker.io":
 		return docker.New(), nil
 	case strings.HasSuffix(domain, "amazonaws.com"):
-		return ecr.New(), nil
+		return ecr.New(&ecr.Config{
+			Region: awsRegion,
+		}), nil
 	default:
 		return nil, fmt.Errorf("unsupported image repository: %s", domain)
 	}
@@ -69,4 +75,8 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
+}
+
+func init() {
+	rootCmd.Flags().StringVar(&awsRegion, "aws-region", "", "AWS Region")
 }

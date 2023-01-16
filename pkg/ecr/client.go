@@ -6,14 +6,27 @@ import (
 	"github.com/aws/aws-sdk-go/service/ecr"
 )
 
-type Client struct{}
+type Client struct {
+	region string
+}
 
-func New() *Client {
-	return &Client{}
+type Config struct {
+	Region string
+}
+
+func New(cfg *Config) *Client {
+	return &Client{
+		region: cfg.Region,
+	}
 }
 
 func (cl *Client) ListTags(name string) ([]string, error) {
-	sess, err := session.NewSession(&aws.Config{})
+	cfg := &aws.Config{}
+	if cl.region != "" {
+		cfg.Region = &cl.region
+	}
+
+	sess, err := session.NewSession(cfg)
 	if err != nil {
 		return nil, err
 	}
