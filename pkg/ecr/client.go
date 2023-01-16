@@ -1,6 +1,8 @@
 package ecr
 
 import (
+	"strings"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -9,25 +11,24 @@ import (
 
 type Client struct {
 	profile string
-	region  string
+	domain  string
 }
 
 type Config struct {
 	Profile string
-	Region  string
+	Domain  string
 }
 
 func New(cfg *Config) *Client {
 	return &Client{
 		profile: cfg.Profile,
-		region:  cfg.Region,
+		domain:  cfg.Domain,
 	}
 }
 
 func (cl *Client) ListTags(name string) ([]string, error) {
-	cfg := &aws.Config{}
-	if cl.region != "" {
-		cfg.Region = &cl.region
+	cfg := &aws.Config{
+		Region: aws.String(cl.extractRegionFromDomain()),
 	}
 	if cl.profile != "" {
 		cfg.Credentials = credentials.NewSharedCredentials("", cl.profile)
@@ -58,4 +59,10 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 	}
 
 	return tags, nil
+}
+
+func (cl *Client) extractRegionFromDomain() string {
+	// <AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/<REPOSITORY_NAME>
+	ds := strings.Split(cl.domain, ".")
+	return ds[len(ds)-3]
 }
