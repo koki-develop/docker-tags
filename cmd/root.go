@@ -3,9 +3,11 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/distribution/distribution/reference"
 	"github.com/koki-develop/docker-tags/pkg/docker"
+	"github.com/koki-develop/docker-tags/pkg/ecr"
 	"github.com/spf13/cobra"
 )
 
@@ -13,10 +15,17 @@ type client interface {
 	ListTags(name string) ([]string, error)
 }
 
+var (
+	_ client = (*docker.Client)(nil)
+	_ client = (*ecr.Client)(nil)
+)
+
 func newClient(domain string) (client, error) {
 	switch {
 	case domain == "docker.io":
 		return docker.New(), nil
+	case strings.HasSuffix(domain, "amazonaws.com"):
+		return ecr.New(), nil
 	default:
 		return nil, fmt.Errorf("unsupported image repository: %s", domain)
 	}
