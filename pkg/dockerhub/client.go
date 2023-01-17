@@ -33,11 +33,6 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 		return nil, err
 	}
 
-	// reverse
-	for i, j := 0, len(tags)-1; i < j; i, j = i+1, j-1 {
-		tags[i], tags[j] = tags[j], tags[i]
-	}
-
 	return tags, nil
 }
 
@@ -71,5 +66,11 @@ func (cl *Client) listTags(name, tkn string) ([]string, error) {
 		return nil, err
 	}
 
-	return tagsResp.Tags, nil
+	// reverse
+	tags := tagsResp.Tags
+	for i, j := 0, len(tags)-1; i < j; i, j = i+1, j-1 {
+		tags[i], tags[j] = tags[j], tags[i]
+	}
+
+	return tags, nil
 }
