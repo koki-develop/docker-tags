@@ -12,8 +12,7 @@ import (
 )
 
 type Client struct {
-	domain string
-	token  string
+	token string
 
 	dockerClient *docker.Client
 	httpClient   *http.Client
@@ -27,7 +26,6 @@ func New(cfg *Config) *Client {
 	apiURL := url.URL{Scheme: "https", Path: cfg.Domain}
 	authURL := url.URL{Scheme: "https", Path: path.Join(cfg.Domain, "/v2/token")}
 	return &Client{
-		domain: cfg.Domain,
 		dockerClient: docker.New(&docker.Config{
 			APIURL:  apiURL.String(),
 			AuthURL: authURL.String(),
