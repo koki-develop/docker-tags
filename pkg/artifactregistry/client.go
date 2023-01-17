@@ -12,8 +12,6 @@ import (
 )
 
 type Client struct {
-	token string
-
 	dockerClient *docker.Client
 	httpClient   *http.Client
 }
@@ -34,6 +32,43 @@ func New(cfg *Config) *Client {
 	}
 }
 
+func (cl *Client) ListTags(name string) ([]string, error) {
+	tkn, _ := cl.auth(name)
+
+	tags, err := cl.listTags(name, tkn)
+	if err != nil {
+		return nil, err
+	}
+
+	return tags, nil
+}
+
+func (cl *Client) auth(name string) (string, error) {
+	ctx := context.Background()
+	cred, err := google.FindDefaultCredentials(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	tkn, err := cred.TokenSource.Token()
+	if err != nil {
+		return "", err
+	}
+
+	req, err := cl.dockerClient.NewAuthRequest(name)
+	if err != nil {
+		return "", err
+	}
+	req.SetBasicAuth("_token", tkn.AccessToken)
+
+	resp, err := cl.dockerClient.DoAuthRequest(req)
+	if err != nil {
+		return "", err
+	}
+
+	return resp.Token, nil
+}
+
 type listTagsResponse struct {
 	Manifest map[string]manifest `json:"manifest"`
 }
@@ -42,13 +77,13 @@ type manifest struct {
 	Tag []string `json:"tag"`
 }
 
-func (cl *Client) ListTags(name string) ([]string, error) {
+func (cl *Client) listTags(name, tkn string) ([]string, error) {
 	req, err := cl.dockerClient.NewListTagsRequest(name)
 	if err != nil {
 		return nil, err
 	}
-	if err := cl.auth(name); err == nil && cl.token != "" {
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
+	if tkn != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
 	}
 
 	var tagsResp listTagsResponse
@@ -62,31 +97,4 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 	}
 
 	return tags, nil
-}
-
-func (cl *Client) auth(name string) error {
-	ctx := context.Background()
-	cred, err := google.FindDefaultCredentials(ctx)
-	if err != nil {
-		return err
-	}
-
-	tkn, err := cred.TokenSource.Token()
-	if err != nil {
-		return err
-	}
-
-	req, err := cl.dockerClient.NewAuthRequest(name)
-	if err != nil {
-		return err
-	}
-	req.SetBasicAuth("_token", tkn.AccessToken)
-
-	resp, err := cl.dockerClient.DoAuthRequest(req)
-	if err != nil {
-		return err
-	}
-
-	cl.token = resp.Token
-	return nil
 }
