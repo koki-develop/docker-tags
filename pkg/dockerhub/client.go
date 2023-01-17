@@ -1,13 +1,8 @@
 package dockerhub
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
-	"io"
 	"net/http"
-	"net/url"
-	"path"
 
 	"github.com/koki-develop/docker-tags/pkg/docker"
 )
@@ -21,6 +16,7 @@ type Client struct {
 func New() *Client {
 	return &Client{
 		dockerClient: docker.New(&docker.Config{
+			APIURL:  "https://registry.hub.docker.com",
 			AuthURL: "https://auth.docker.io/token",
 		}),
 		httpClient: new(http.Client),
@@ -60,34 +56,14 @@ type listTagsResponse struct {
 }
 
 func (cl *Client) listTags(name string) ([]string, error) {
-	u, err := url.ParseRequestURI("https://registry.hub.docker.com/v2/")
-	if err != nil {
-		return nil, err
-	}
-	u.Path = path.Join(u.Path, name, "tags/list")
-
-	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	req, err := cl.dockerClient.NewListTagsRequest(name)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
 
-	resp, err := cl.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		return nil, errors.New(string(b))
-	}
-
 	var tagsResp listTagsResponse
-	if err := json.NewDecoder(resp.Body).Decode(&tagsResp); err != nil {
+	if err := cl.dockerClient.DoListTagsRequest(req, &tagsResp); err != nil {
 		return nil, err
 	}
 

@@ -2,10 +2,7 @@ package artifactregistry
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"path"
@@ -27,10 +24,12 @@ type Config struct {
 }
 
 func New(cfg *Config) *Client {
+	apiURL := url.URL{Scheme: "https", Path: cfg.Domain}
 	authURL := url.URL{Scheme: "https", Path: path.Join(cfg.Domain, "/v2/token")}
 	return &Client{
 		domain: cfg.Domain,
 		dockerClient: docker.New(&docker.Config{
+			APIURL:  apiURL.String(),
 			AuthURL: authURL.String(),
 		}),
 		httpClient: new(http.Client),
@@ -46,10 +45,7 @@ type manifest struct {
 }
 
 func (cl *Client) ListTags(name string) ([]string, error) {
-	u := url.URL{Scheme: "https", Host: cl.domain}
-	u.Path = path.Join(u.Path, "v2", name, "tags/list")
-
-	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	req, err := cl.dockerClient.NewListTagsRequest(name)
 	if err != nil {
 		return nil, err
 	}
@@ -57,22 +53,8 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
 	}
 
-	resp, err := cl.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		return nil, errors.New(string(b))
-	}
-
 	var tagsResp listTagsResponse
-	if err := json.NewDecoder(resp.Body).Decode(&tagsResp); err != nil {
+	if err := cl.dockerClient.DoListTagsRequest(req, &tagsResp); err != nil {
 		return nil, err
 	}
 
