@@ -7,7 +7,7 @@ import (
 
 	"github.com/distribution/distribution/reference"
 	"github.com/koki-develop/docker-tags/pkg/artifactregistry"
-	"github.com/koki-develop/docker-tags/pkg/docker"
+	"github.com/koki-develop/docker-tags/pkg/dockerhub"
 	"github.com/koki-develop/docker-tags/pkg/ecr"
 	"github.com/koki-develop/docker-tags/pkg/gcr"
 	"github.com/spf13/cobra"
@@ -18,7 +18,7 @@ type client interface {
 }
 
 var (
-	_ client = (*docker.Client)(nil)
+	_ client = (*dockerhub.Client)(nil)
 	_ client = (*ecr.Client)(nil)
 )
 
@@ -29,7 +29,7 @@ var (
 func newClient(domain string) (client, error) {
 	switch {
 	case domain == "docker.io":
-		return docker.New(), nil
+		return dockerhub.New(), nil
 	case domain == "gcr.io":
 		return gcr.New(), nil
 	case strings.HasSuffix(domain, "amazonaws.com"):
