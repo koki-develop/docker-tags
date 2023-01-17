@@ -10,13 +10,16 @@ import (
 	"net/url"
 	"path"
 
+	"github.com/koki-develop/docker-tags/pkg/docker"
 	"golang.org/x/oauth2/google"
 )
 
 type Client struct {
-	domain     string
-	httpClient *http.Client
-	token      string
+	domain string
+	token  string
+
+	dockerClient *docker.Client
+	httpClient   *http.Client
 }
 
 type Config struct {
@@ -24,8 +27,12 @@ type Config struct {
 }
 
 func New(cfg *Config) *Client {
+	authURL := url.URL{Scheme: "https", Path: path.Join(cfg.Domain, "/v2/token")}
 	return &Client{
-		domain:     cfg.Domain,
+		domain: cfg.Domain,
+		dockerClient: docker.New(&docker.Config{
+			AuthURL: authURL.String(),
+		}),
 		httpClient: new(http.Client),
 	}
 }
@@ -77,10 +84,6 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 	return tags, nil
 }
 
-type dockerAuthResponse struct {
-	Token string `json:"token"`
-}
-
 func (cl *Client) auth(name string) error {
 	ctx := context.Background()
 	cred, err := google.FindDefaultCredentials(ctx)
@@ -93,36 +96,17 @@ func (cl *Client) auth(name string) error {
 		return err
 	}
 
-	u := url.URL{Scheme: "https", Path: path.Join(cl.domain, "/v2/token")}
-	q := u.Query()
-	q.Set("scope", fmt.Sprintf("repository:%s:pull", name))
-	u.RawQuery = q.Encode()
-
-	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	req, err := cl.dockerClient.NewAuthRequest(name)
 	if err != nil {
 		return err
 	}
 	req.SetBasicAuth("_token", tkn.AccessToken)
 
-	resp, err := cl.httpClient.Do(req)
+	resp, err := cl.dockerClient.DoAuthRequest(req)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		return errors.New(string(b))
-	}
-
-	var authResp dockerAuthResponse
-	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
-		return err
-	}
-
-	cl.token = authResp.Token
+	cl.token = resp.Token
 	return nil
 }

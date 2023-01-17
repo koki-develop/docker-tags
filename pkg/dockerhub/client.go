@@ -8,15 +8,21 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+
+	"github.com/koki-develop/docker-tags/pkg/docker"
 )
 
 type Client struct {
-	token      string
-	httpClient *http.Client
+	token        string
+	dockerClient *docker.Client
+	httpClient   *http.Client
 }
 
 func New() *Client {
 	return &Client{
+		dockerClient: docker.New(&docker.Config{
+			AuthURL: "https://auth.docker.io/token",
+		}),
 		httpClient: new(http.Client),
 	}
 }
@@ -34,45 +40,18 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 	return tags, nil
 }
 
-type dockerAuthResponse struct {
-	Token string `json:"token"`
-}
-
 func (cl *Client) auth(name string) error {
-	u, err := url.ParseRequestURI("https://auth.docker.io/token")
-	if err != nil {
-		return err
-	}
-	q := u.Query()
-	q.Set("service", "registry.docker.io")
-	q.Set("scope", fmt.Sprintf("repository:%s:pull", name))
-	u.RawQuery = q.Encode()
-
-	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	req, err := cl.dockerClient.NewAuthRequest(name)
 	if err != nil {
 		return err
 	}
 
-	resp, err := cl.httpClient.Do(req)
+	resp, err := cl.dockerClient.DoAuthRequest(req)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		return errors.New(string(b))
-	}
-
-	var authResp dockerAuthResponse
-	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
-		return err
-	}
-
-	cl.token = authResp.Token
+	cl.token = resp.Token
 	return nil
 }
 
