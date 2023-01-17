@@ -32,6 +32,7 @@ func newClient(domain string) (client, error) {
 	case domain == "gcr.io":
 		return gcr.New(), nil
 	case strings.HasSuffix(domain, "amazonaws.com"):
+		// <AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/<REPOSITORY_NAME>
 		return ecr.New(&ecr.Config{
 			Profile: awsProfile,
 			Domain:  domain,
