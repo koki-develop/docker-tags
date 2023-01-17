@@ -7,19 +7,23 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"path"
 )
 
 type Client struct {
+	apiURL     string
 	authURL    string
 	httpClient *http.Client
 }
 
 type Config struct {
+	APIURL  string
 	AuthURL string
 }
 
 func New(cfg *Config) *Client {
 	return &Client{
+		apiURL:     cfg.APIURL,
 		authURL:    cfg.AuthURL,
 		httpClient: new(http.Client),
 	}
@@ -54,6 +58,28 @@ func (cl *Client) DoAuthRequest(req *http.Request) (*DockerAuthResponse, error) 
 	}
 
 	return &resp, nil
+}
+
+func (cl *Client) NewListTagsRequest(name string) (*http.Request, error) {
+	u, err := url.ParseRequestURI(cl.apiURL)
+	if err != nil {
+		return nil, err
+	}
+	u.Path = path.Join(u.Path, "v2", name, "tags/list")
+
+	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+func (cl *Client) DoListTagsRequest(req *http.Request, out interface{}) error {
+	if err := cl.do(req, out); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (cl *Client) do(req *http.Request, out interface{}) error {
