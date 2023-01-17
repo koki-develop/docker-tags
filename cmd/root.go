@@ -9,6 +9,7 @@ import (
 	"github.com/koki-develop/docker-tags/pkg/artifactregistry"
 	"github.com/koki-develop/docker-tags/pkg/dockerhub"
 	"github.com/koki-develop/docker-tags/pkg/ecr"
+	"github.com/koki-develop/docker-tags/pkg/ecrpublic"
 	"github.com/koki-develop/docker-tags/pkg/gcr"
 	"github.com/spf13/cobra"
 )
@@ -20,6 +21,9 @@ type client interface {
 var (
 	_ client = (*dockerhub.Client)(nil)
 	_ client = (*ecr.Client)(nil)
+	_ client = (*ecrpublic.Client)(nil)
+	_ client = (*artifactregistry.Client)(nil)
+	_ client = (*gcr.Client)(nil)
 )
 
 var (
@@ -30,14 +34,18 @@ func newClient(domain string) (client, error) {
 	switch {
 	case domain == "docker.io":
 		return dockerhub.New(), nil
-	case domain == "gcr.io":
-		return gcr.New(), nil
+	case domain == "public.ecr.aws":
+		return ecrpublic.New(&ecrpublic.Config{
+			Profile: awsProfile,
+		}), nil
 	case strings.HasSuffix(domain, "amazonaws.com"):
 		// <AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/<REPOSITORY_NAME>
 		return ecr.New(&ecr.Config{
 			Profile: awsProfile,
 			Domain:  domain,
 		}), nil
+	case domain == "gcr.io":
+		return gcr.New(), nil
 	case strings.HasSuffix(domain, "-docker.pkg.dev"):
 		// <LOCATION>-docker.pkg.dev/<PROJECT>/<REPOSITORY>/<PACKAGE>
 		return artifactregistry.New(&artifactregistry.Config{Domain: domain}), nil
