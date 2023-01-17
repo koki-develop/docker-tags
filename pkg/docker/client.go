@@ -35,7 +35,7 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 }
 
 type dockerAuthResponse struct {
-	AccessToken string `json:"access_token"`
+	Token string `json:"token"`
 }
 
 func (cl *Client) auth(name string) error {
@@ -72,7 +72,7 @@ func (cl *Client) auth(name string) error {
 		return err
 	}
 
-	cl.token = authResp.AccessToken
+	cl.token = authResp.Token
 	return nil
 }
 
