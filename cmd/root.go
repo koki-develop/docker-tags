@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/distribution/distribution/reference"
+	"github.com/koki-develop/docker-tags/pkg/artifactregistry"
 	"github.com/koki-develop/docker-tags/pkg/docker"
 	"github.com/koki-develop/docker-tags/pkg/ecr"
 	"github.com/koki-develop/docker-tags/pkg/gcr"
@@ -37,6 +38,9 @@ func newClient(domain string) (client, error) {
 			Profile: awsProfile,
 			Domain:  domain,
 		}), nil
+	case strings.HasSuffix(domain, "-docker.pkg.dev"):
+		// <LOCATION>-docker.pkg.dev/<PROJECT>/<REPOSITORY>/<PACKAGE>
+		return artifactregistry.New(&artifactregistry.Config{Domain: domain}), nil
 	default:
 		return nil, fmt.Errorf("unsupported image repository: %s", domain)
 	}
