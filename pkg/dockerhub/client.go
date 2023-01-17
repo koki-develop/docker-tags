@@ -8,7 +8,6 @@ import (
 )
 
 type Client struct {
-	token        string
 	dockerClient *docker.Client
 	httpClient   *http.Client
 }
@@ -24,43 +23,48 @@ func New() *Client {
 }
 
 func (cl *Client) ListTags(name string) ([]string, error) {
-	if err := cl.auth(name); err != nil {
+	tkn, err := cl.auth(name)
+	if err != nil {
 		return nil, err
 	}
 
-	tags, err := cl.listTags(name)
+	tags, err := cl.listTags(name, tkn)
 	if err != nil {
 		return nil, err
+	}
+
+	// reverse
+	for i, j := 0, len(tags)-1; i < j; i, j = i+1, j-1 {
+		tags[i], tags[j] = tags[j], tags[i]
 	}
 
 	return tags, nil
 }
 
-func (cl *Client) auth(name string) error {
+func (cl *Client) auth(name string) (string, error) {
 	req, err := cl.dockerClient.NewAuthRequest(name)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	resp, err := cl.dockerClient.DoAuthRequest(req)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	cl.token = resp.Token
-	return nil
+	return resp.Token, nil
 }
 
 type listTagsResponse struct {
 	Tags []string `json:"tags"`
 }
 
-func (cl *Client) listTags(name string) ([]string, error) {
+func (cl *Client) listTags(name, tkn string) ([]string, error) {
 	req, err := cl.dockerClient.NewListTagsRequest(name)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
 
 	var tagsResp listTagsResponse
 	if err := cl.dockerClient.DoListTagsRequest(req, &tagsResp); err != nil {
