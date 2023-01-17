@@ -1,20 +1,25 @@
 package gcr
 
 import (
-	"encoding/json"
-	"errors"
-	"io"
+	"context"
+	"fmt"
 	"net/http"
-	"net/url"
-	"path"
+
+	"github.com/koki-develop/docker-tags/pkg/docker"
+	"golang.org/x/oauth2/google"
 )
 
 type Client struct {
-	httpClient *http.Client
+	dockerClient *docker.Client
+	httpClient   *http.Client
 }
 
 func New() *Client {
 	return &Client{
+		dockerClient: docker.New(&docker.Config{
+			APIURL:  "https://gcr.io",
+			AuthURL: "https://gcr.io/v2/token",
+		}),
 		httpClient: new(http.Client),
 	}
 }
@@ -28,33 +33,53 @@ type manifest struct {
 }
 
 func (cl *Client) ListTags(name string) ([]string, error) {
-	u, err := url.ParseRequestURI("https://gcr.io/v2")
-	if err != nil {
-		return nil, err
-	}
-	u.Path = path.Join(u.Path, name, "tags/list")
+	tkn, _ := cl.auth(name)
 
-	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	tags, err := cl.listTags(name, tkn)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := cl.httpClient.Do(req)
+	return tags, nil
+}
+
+func (cl *Client) auth(name string) (string, error) {
+	ctx := context.Background()
+	cred, err := google.FindDefaultCredentials(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	tkn, err := cred.TokenSource.Token()
+	if err != nil {
+		return "", err
+	}
+
+	req, err := cl.dockerClient.NewAuthRequest(name)
+	if err != nil {
+		return "", err
+	}
+	req.SetBasicAuth("_token", tkn.AccessToken)
+
+	resp, err := cl.dockerClient.DoAuthRequest(req)
+	if err != nil {
+		return "", err
+	}
+
+	return resp.Token, nil
+}
+
+func (cl *Client) listTags(name, tkn string) ([]string, error) {
+	req, err := cl.dockerClient.NewListTagsRequest(name)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		return nil, errors.New(string(b))
+	if tkn != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
 	}
 
 	var tagsResp listTagsResponse
-	if err := json.NewDecoder(resp.Body).Decode(&tagsResp); err != nil {
+	if err := cl.dockerClient.DoListTagsRequest(req, &tagsResp); err != nil {
 		return nil, err
 	}
 
