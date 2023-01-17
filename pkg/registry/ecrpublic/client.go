@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ecrpublic"
-	"github.com/koki-develop/docker-tags/pkg/docker"
+	"github.com/koki-develop/docker-tags/pkg/util/docker"
 )
 
 type Client struct {

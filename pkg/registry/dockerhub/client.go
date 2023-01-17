@@ -1,12 +1,10 @@
-package gcr
+package dockerhub
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
-	"github.com/koki-develop/docker-tags/pkg/docker"
-	"golang.org/x/oauth2/google"
+	"github.com/koki-develop/docker-tags/pkg/util/docker"
 )
 
 type Client struct {
@@ -17,23 +15,18 @@ type Client struct {
 func New() *Client {
 	return &Client{
 		dockerClient: docker.New(&docker.Config{
-			APIURL:  "https://gcr.io",
-			AuthURL: "https://gcr.io/v2/token",
+			APIURL:  "https://registry.hub.docker.com",
+			AuthURL: "https://auth.docker.io/token",
 		}),
 		httpClient: new(http.Client),
 	}
 }
 
-type listTagsResponse struct {
-	Manifest map[string]manifest `json:"manifest"`
-}
-
-type manifest struct {
-	Tag []string `json:"tag"`
-}
-
 func (cl *Client) ListTags(name string) ([]string, error) {
-	tkn, _ := cl.auth(name)
+	tkn, err := cl.auth(name)
+	if err != nil {
+		return nil, err
+	}
 
 	tags, err := cl.listTags(name, tkn)
 	if err != nil {
@@ -44,22 +37,10 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 }
 
 func (cl *Client) auth(name string) (string, error) {
-	ctx := context.Background()
-	cred, err := google.FindDefaultCredentials(ctx)
-	if err != nil {
-		return "", err
-	}
-
-	tkn, err := cred.TokenSource.Token()
-	if err != nil {
-		return "", err
-	}
-
 	req, err := cl.dockerClient.NewAuthRequest(name)
 	if err != nil {
 		return "", err
 	}
-	req.SetBasicAuth("_token", tkn.AccessToken)
 
 	resp, err := cl.dockerClient.DoAuthRequest(req)
 	if err != nil {
@@ -69,23 +50,26 @@ func (cl *Client) auth(name string) (string, error) {
 	return resp.Token, nil
 }
 
+type listTagsResponse struct {
+	Tags []string `json:"tags"`
+}
+
 func (cl *Client) listTags(name, tkn string) ([]string, error) {
 	req, err := cl.dockerClient.NewListTagsRequest(name)
 	if err != nil {
 		return nil, err
 	}
-	if tkn != "" {
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
-	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
 
 	var tagsResp listTagsResponse
 	if err := cl.dockerClient.DoListTagsRequest(req, &tagsResp); err != nil {
 		return nil, err
 	}
 
-	tags := []string{}
-	for _, m := range tagsResp.Manifest {
-		tags = append(tags, m.Tag...)
+	// reverse
+	tags := tagsResp.Tags
+	for i, j := 0, len(tags)-1; i < j; i, j = i+1, j-1 {
+		tags[i], tags[j] = tags[j], tags[i]
 	}
 
 	return tags, nil

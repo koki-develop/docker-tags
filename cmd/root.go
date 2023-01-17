@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/distribution/distribution/reference"
-	"github.com/koki-develop/docker-tags/pkg/artifactregistry"
-	"github.com/koki-develop/docker-tags/pkg/dockerhub"
-	"github.com/koki-develop/docker-tags/pkg/ecr"
-	"github.com/koki-develop/docker-tags/pkg/ecrpublic"
-	"github.com/koki-develop/docker-tags/pkg/gcr"
+	"github.com/koki-develop/docker-tags/pkg/registry/artifactregistry"
+	"github.com/koki-develop/docker-tags/pkg/registry/dockerhub"
+	"github.com/koki-develop/docker-tags/pkg/registry/ecr"
+	"github.com/koki-develop/docker-tags/pkg/registry/ecrpublic"
+	"github.com/koki-develop/docker-tags/pkg/registry/gcr"
 	"github.com/spf13/cobra"
 )
 

@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"path"
 
-	"github.com/koki-develop/docker-tags/pkg/docker"
+	"github.com/koki-develop/docker-tags/pkg/util/docker"
 	"golang.org/x/oauth2/google"
 )
 
