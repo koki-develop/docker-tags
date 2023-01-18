@@ -7,6 +7,14 @@
 Command line tool to get a list of tags for docker images.
 It can also be used as a docker cli plugin.
 
+# Supported Registry
+
+- [Docker Hub](https://hub.docker.com/)
+- [Amazon ECR](https://aws.amazon.com/ecr/)
+- [Amazon ECR Public](https://docs.aws.amazon.com/AmazonECR/latest/public/index.html)
+- [Google Container Registry](https://cloud.google.com/container-registry)
+- [Google Artifact Registry](https://cloud.google.com/artifact-registry)
+
 # Installation
 
 ## Homebrew
@@ -61,14 +69,6 @@ edge
 3.9.5
 ...
 ```
-
-# Supported Registry
-
-- [Docker Hub](https://hub.docker.com/)
-- [Amazon ECR](https://aws.amazon.com/ecr/)
-- [Amazon ECR Public](https://docs.aws.amazon.com/AmazonECR/latest/public/index.html)
-- [Google Container Registry](https://cloud.google.com/container-registry)
-- [Google Artifact Registry](https://cloud.google.com/artifact-registry)
 
 # LICENSE
 
