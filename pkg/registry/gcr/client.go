@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"sort"
 
 	"github.com/koki-develop/docker-tags/pkg/util/docker"
 	"golang.org/x/oauth2/google"
@@ -29,7 +30,8 @@ type listTagsResponse struct {
 }
 
 type manifest struct {
-	Tag []string `json:"tag"`
+	Tag            []string `json:"tag"`
+	TimeUploadedMs string   `json:"timeUploadedMs"`
 }
 
 func (cl *Client) ListTags(name string) ([]string, error) {
@@ -83,8 +85,16 @@ func (cl *Client) listTags(name, tkn string) ([]string, error) {
 		return nil, err
 	}
 
-	tags := []string{}
+	manifests := []manifest{}
 	for _, m := range tagsResp.Manifest {
+		manifests = append(manifests, m)
+	}
+	sort.Slice(manifests, func(i, j int) bool {
+		return manifests[i].TimeUploadedMs > manifests[j].TimeUploadedMs
+	})
+
+	tags := []string{}
+	for _, m := range manifests {
 		tags = append(tags, m.Tag...)
 	}
 
