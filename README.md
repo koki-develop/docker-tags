@@ -1,5 +1,9 @@
 # docker-tags
 
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/koki-develop/docker-tags)](https://github.com/koki-develop/docker-tags/releases/latest)
+[![GitHub](https://img.shields.io/github/license/koki-develop/docker-tags)](./LICENSE)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/koki-develop/docker-tags/ci.yml)](https://github.com/koki-develop/docker-tags/actions/workflows/ci.yml)
+
 Command line tool to get a list of tags for docker images.
 It can also be used as a docker cli plugin.
 
@@ -47,13 +51,14 @@ latest
 edge
 3.9.6
 3.9.5
-3.9.4
-3.9.3
-3.9.2
-3.9
-3.8.5
-3.8.4
-3.8
+...
+
+# as a docker cli plugin
+$ docker tags alpine
+latest
+edge
+3.9.6
+3.9.5
 ...
 ```
 
