@@ -6,6 +6,9 @@ import (
 	"strings"
 
 	"github.com/distribution/distribution/reference"
+	"github.com/docker/cli/cli-plugins/manager"
+	"github.com/docker/cli/cli-plugins/plugin"
+	"github.com/docker/cli/cli/command"
 	"github.com/koki-develop/docker-tags/pkg/registry/artifactregistry"
 	"github.com/koki-develop/docker-tags/pkg/registry/dockerhub"
 	"github.com/koki-develop/docker-tags/pkg/registry/ecr"
@@ -17,6 +20,8 @@ import (
 type client interface {
 	ListTags(name string) ([]string, error)
 }
+
+var cliPlugin string = ""
 
 var (
 	_ client = (*dockerhub.Client)(nil)
@@ -88,12 +93,30 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
-		os.Exit(1)
+	if cliPlugin == "true" {
+		plugin.Run(
+			func(c command.Cli) *cobra.Command {
+				return rootCmd
+			},
+			manager.Metadata{
+				SchemaVersion:    "0.1.0",
+				Vendor:           "Koki Sato",
+				Version:          version,
+				ShortDescription: "Command line tool to get a list of tags for docker images",
+				URL:              "https://github.com/koki-develop/docker-tags",
+			},
+		)
+	} else {
+		if err := rootCmd.Execute(); err != nil {
+			os.Exit(1)
+		}
 	}
 }
 
 func init() {
+	if cliPlugin == "true" {
+		rootCmd.Use = "tags [IMAGE]"
+	}
+
 	rootCmd.Flags().StringVar(&awsProfile, "aws-profile", "", "aws profile")
 }
