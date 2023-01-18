@@ -1,6 +1,7 @@
 package ecr
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -51,9 +52,14 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 		return nil, err
 	}
 
+	imgs := out.ImageDetails
+	sort.Slice(imgs, func(i, j int) bool {
+		return imgs[i].ImagePushedAt.After(*imgs[j].ImagePushedAt)
+	})
+
 	tags := []string{}
-	for _, d := range out.ImageDetails {
-		for _, t := range d.ImageTags {
+	for _, img := range imgs {
+		for _, t := range img.ImageTags {
 			tags = append(tags, *t)
 		}
 	}
