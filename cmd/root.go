@@ -32,6 +32,7 @@ var (
 )
 
 var (
+	output     string
 	withName   bool
 	awsProfile string
 )
@@ -67,6 +68,11 @@ var rootCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		img := args[0]
 
+		prtr, err := newPrinter(output)
+		if err != nil {
+			return err
+		}
+
 		named, err := reference.ParseNormalizedNamed(img)
 		if err != nil {
 			return err
@@ -85,12 +91,12 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		for _, t := range tags {
-			if withName {
-				fmt.Printf("%s:%s\n", img, t)
-			} else {
-				fmt.Println(t)
-			}
+		if err := prtr.Print(&printParams{
+			Name:     img,
+			Tags:     tags,
+			WithName: withName,
+		}); err != nil {
+			return err
 		}
 
 		return nil
@@ -123,6 +129,7 @@ func init() {
 		rootCmd.Use = "tags [IMAGE]"
 	}
 
+	rootCmd.Flags().StringVarP(&output, "output", "o", "text", "output format (text|json)")
 	rootCmd.Flags().BoolVarP(&withName, "with-name", "n", false, "print with image name")
 	rootCmd.Flags().StringVar(&awsProfile, "aws-profile", "", "aws profile")
 }
