@@ -50,7 +50,9 @@ Usage:
 Flags:
       --aws-profile string   aws profile
   -h, --help                 help for docker-tags
+  -o, --output string        output format (text|json) (default "text")
   -v, --version              version for docker-tags
+  -n, --with-name            print with image name
 ```
 
 ```sh
