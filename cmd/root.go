@@ -32,6 +32,7 @@ var (
 )
 
 var (
+	withName   bool
 	awsProfile string
 )
 
@@ -85,7 +86,11 @@ var rootCmd = &cobra.Command{
 		}
 
 		for _, t := range tags {
-			fmt.Println(t)
+			if withName {
+				fmt.Printf("%s:%s\n", img, t)
+			} else {
+				fmt.Println(t)
+			}
 		}
 
 		return nil
@@ -118,5 +123,6 @@ func init() {
 		rootCmd.Use = "tags [IMAGE]"
 	}
 
+	rootCmd.Flags().BoolVarP(&withName, "with-name", "n", false, "print with image name")
 	rootCmd.Flags().StringVar(&awsProfile, "aws-profile", "", "aws profile")
 }
