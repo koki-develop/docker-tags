@@ -1,17 +1,17 @@
 package gcr
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"sort"
 
 	"github.com/koki-develop/docker-tags/pkg/util/docker"
-	"golang.org/x/oauth2/google"
+	"github.com/koki-develop/docker-tags/pkg/util/google"
 )
 
 type Client struct {
 	dockerClient *docker.Client
+	googleClient *google.Client
 	httpClient   *http.Client
 }
 
@@ -21,7 +21,8 @@ func New() *Client {
 			APIURL:  "https://gcr.io",
 			AuthURL: "https://gcr.io/v2/token",
 		}),
-		httpClient: new(http.Client),
+		googleClient: google.New(),
+		httpClient:   new(http.Client),
 	}
 }
 
@@ -46,13 +47,7 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 }
 
 func (cl *Client) auth(name string) (string, error) {
-	ctx := context.Background()
-	cred, err := google.FindDefaultCredentials(ctx)
-	if err != nil {
-		return "", err
-	}
-
-	tkn, err := cred.TokenSource.Token()
+	tkn, err := cl.googleClient.Token()
 	if err != nil {
 		return "", err
 	}
