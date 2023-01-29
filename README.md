@@ -2,7 +2,7 @@
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/koki-develop/docker-tags)](https://github.com/koki-develop/docker-tags/releases/latest)
 [![GitHub](https://img.shields.io/github/license/koki-develop/docker-tags)](./LICENSE)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/koki-develop/docker-tags/ci.yml)](https://github.com/koki-develop/docker-tags/actions/workflows/ci.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/koki-develop/docker-tags/ci.yml?logo=github)](https://github.com/koki-develop/docker-tags/actions/workflows/ci.yml)
 
 Command line tool to get a list of tags for docker images.
 It can also be used as a docker cli plugin.
