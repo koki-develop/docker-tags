@@ -38,7 +38,7 @@ $ brew install koki-develop/tap/docker-tags
 $ go install github.com/koki-develop/docker-tags@latest
 ```
 
-## docker cli plugin
+## Docker CLI Plugin
 
 ```sh
 $ git clone https://github.com/koki-develop/docker-tags.git
@@ -47,6 +47,10 @@ $ make
 $ mkdir -p $HOME/.docker/cli-plugins/
 $ mv ./dist/docker-tags $HOME/.docker/cli-plugins/
 ```
+
+## Release
+
+Download the binary from the [releases page](https://github.com/koki-develop/docker-tags/releases/latest).
 
 # Usage
 
