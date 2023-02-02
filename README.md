@@ -46,6 +46,7 @@ $ cd docker-tags
 $ make
 $ mkdir -p $HOME/.docker/cli-plugins/
 $ mv ./dist/docker-tags $HOME/.docker/cli-plugins/
+$ docker tags --help
 ```
 
 ## Release
@@ -75,14 +76,18 @@ edge
 3.9.6
 3.9.5
 ...
+```
 
-# as a docker cli plugin
-$ docker tags alpine
-latest
-edge
-3.9.6
-3.9.5
-...
+```sh
+# json format
+$ docker-tags alpine -o json
+[
+  "latest",
+  "edge",
+  "3.9.6",
+  "3.9.5",
+  ...
+]
 ```
 
 # LICENSE
