@@ -5,12 +5,14 @@ import (
 	"net/http"
 
 	"github.com/aws/aws-sdk-go/service/ecrpublic"
+	"github.com/aws/aws-sdk-go/service/ecrpublic/ecrpubliciface"
 	"github.com/koki-develop/docker-tags/pkg/util/awsutil"
 	"github.com/koki-develop/docker-tags/pkg/util/dockerutil"
 )
 
 type Client struct {
-	profile      string
+	ecrpublicAPI ecrpubliciface.ECRPublicAPI
+
 	dockerClient *dockerutil.Client
 	httpClient   *http.Client
 }
@@ -19,15 +21,25 @@ type Config struct {
 	Profile string
 }
 
-func New(cfg *Config) *Client {
+func New(cfg *Config) (*Client, error) {
+	sess, err := awsutil.NewSession(&awsutil.SessionConfig{
+		Profile: cfg.Profile,
+		Region:  "us-east-1",
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	svc := ecrpublic.New(sess)
+
 	return &Client{
-		profile: cfg.Profile,
+		ecrpublicAPI: svc,
 		dockerClient: dockerutil.New(&dockerutil.Config{
 			APIURL:  "https://public.ecr.aws",
 			AuthURL: "https://public.ecr.aws/v2/token",
 		}),
 		httpClient: new(http.Client),
-	}
+	}, nil
 }
 
 func (cl *Client) ListTags(name string) ([]string, error) {
@@ -45,17 +57,7 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 }
 
 func (cl *Client) auth(name string) (string, error) {
-	sess, err := awsutil.NewSession(&awsutil.SessionConfig{
-		Profile: cl.profile,
-		Region:  "us-east-1",
-	})
-	if err != nil {
-		return "", err
-	}
-
-	svc := ecrpublic.New(sess)
-
-	out, err := svc.GetAuthorizationToken(&ecrpublic.GetAuthorizationTokenInput{})
+	out, err := cl.ecrpublicAPI.GetAuthorizationToken(&ecrpublic.GetAuthorizationTokenInput{})
 	if err != nil {
 		return "", err
 	}
