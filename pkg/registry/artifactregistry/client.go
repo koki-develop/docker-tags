@@ -8,12 +8,12 @@ import (
 	"sort"
 
 	"github.com/koki-develop/docker-tags/pkg/util/dockerutil"
-	"github.com/koki-develop/docker-tags/pkg/util/google"
+	"github.com/koki-develop/docker-tags/pkg/util/googleutil"
 )
 
 type Client struct {
 	dockerClient *dockerutil.Client
-	googleClient *google.Client
+	googleClient *googleutil.Client
 	httpClient   *http.Client
 }
 
