@@ -7,12 +7,12 @@ import (
 	"path"
 	"sort"
 
-	"github.com/koki-develop/docker-tags/pkg/util/docker"
+	"github.com/koki-develop/docker-tags/pkg/util/dockerutil"
 	"github.com/koki-develop/docker-tags/pkg/util/google"
 )
 
 type Client struct {
-	dockerClient *docker.Client
+	dockerClient *dockerutil.Client
 	googleClient *google.Client
 	httpClient   *http.Client
 }
@@ -25,7 +25,7 @@ func New(cfg *Config) *Client {
 	apiURL := url.URL{Scheme: "https", Path: cfg.Domain}
 	authURL := url.URL{Scheme: "https", Path: path.Join(cfg.Domain, "/v2/token")}
 	return &Client{
-		dockerClient: docker.New(&docker.Config{
+		dockerClient: dockerutil.New(&dockerutil.Config{
 			APIURL:  apiURL.String(),
 			AuthURL: authURL.String(),
 		}),

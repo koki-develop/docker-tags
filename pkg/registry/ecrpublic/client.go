@@ -8,12 +8,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ecrpublic"
-	"github.com/koki-develop/docker-tags/pkg/util/docker"
+	"github.com/koki-develop/docker-tags/pkg/util/dockerutil"
 )
 
 type Client struct {
 	profile      string
-	dockerClient *docker.Client
+	dockerClient *dockerutil.Client
 	httpClient   *http.Client
 }
 
@@ -24,7 +24,7 @@ type Config struct {
 func New(cfg *Config) *Client {
 	return &Client{
 		profile: cfg.Profile,
-		dockerClient: docker.New(&docker.Config{
+		dockerClient: dockerutil.New(&dockerutil.Config{
 			APIURL:  "https://public.ecr.aws",
 			AuthURL: "https://public.ecr.aws/v2/token",
 		}),

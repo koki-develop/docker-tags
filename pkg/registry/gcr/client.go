@@ -5,19 +5,19 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/koki-develop/docker-tags/pkg/util/docker"
+	"github.com/koki-develop/docker-tags/pkg/util/dockerutil"
 	"github.com/koki-develop/docker-tags/pkg/util/google"
 )
 
 type Client struct {
-	dockerClient *docker.Client
+	dockerClient *dockerutil.Client
 	googleClient *google.Client
 	httpClient   *http.Client
 }
 
 func New() *Client {
 	return &Client{
-		dockerClient: docker.New(&docker.Config{
+		dockerClient: dockerutil.New(&dockerutil.Config{
 			APIURL:  "https://gcr.io",
 			AuthURL: "https://gcr.io/v2/token",
 		}),

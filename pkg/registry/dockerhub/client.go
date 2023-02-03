@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/koki-develop/docker-tags/pkg/util/docker"
+	"github.com/koki-develop/docker-tags/pkg/util/dockerutil"
 )
 
 type Client struct {
-	dockerClient *docker.Client
+	dockerClient *dockerutil.Client
 	httpClient   *http.Client
 }
 
 func New() *Client {
 	return &Client{
-		dockerClient: docker.New(&docker.Config{
+		dockerClient: dockerutil.New(&dockerutil.Config{
 			APIURL:  "https://registry.hub.docker.com",
 			AuthURL: "https://auth.docker.io/token",
 		}),
