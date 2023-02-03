@@ -6,12 +6,12 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ecr"
+	"github.com/aws/aws-sdk-go/service/ecr/ecriface"
 	"github.com/koki-develop/docker-tags/pkg/util/awsutil"
 )
 
 type Client struct {
-	profile string
-	domain  string
+	ecrAPI ecriface.ECRAPI
 }
 
 type Config struct {
@@ -19,17 +19,10 @@ type Config struct {
 	Domain  string
 }
 
-func New(cfg *Config) *Client {
-	return &Client{
-		profile: cfg.Profile,
-		domain:  cfg.Domain,
-	}
-}
-
-func (cl *Client) ListTags(name string) ([]string, error) {
+func New(cfg *Config) (*Client, error) {
 	sess, err := awsutil.NewSession(&awsutil.SessionConfig{
-		Region:  cl.extractRegionFromDomain(),
-		Profile: cl.profile,
+		Profile: cfg.Profile,
+		Region:  extractRegionFromDomain(cfg.Domain),
 	})
 	if err != nil {
 		return nil, err
@@ -37,7 +30,17 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 
 	svc := ecr.New(sess)
 
-	out, err := svc.DescribeImages(&ecr.DescribeImagesInput{
+	return &Client{ecrAPI: svc}, nil
+}
+
+func extractRegionFromDomain(domain string) string {
+	// <AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com
+	ds := strings.Split(domain, ".")
+	return ds[len(ds)-3]
+}
+
+func (cl *Client) ListTags(name string) ([]string, error) {
+	out, err := cl.ecrAPI.DescribeImages(&ecr.DescribeImagesInput{
 		RepositoryName: aws.String(name),
 		Filter: &ecr.DescribeImagesFilter{
 			TagStatus: aws.String(ecr.TagStatusTagged),
@@ -60,10 +63,4 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 	}
 
 	return tags, nil
-}
-
-func (cl *Client) extractRegionFromDomain() string {
-	// <AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/<REPOSITORY_NAME>
-	ds := strings.Split(cl.domain, ".")
-	return ds[len(ds)-3]
 }

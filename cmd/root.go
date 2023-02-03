@@ -47,10 +47,7 @@ func newClient(domain string) (client, error) {
 		}), nil
 	case strings.HasSuffix(domain, "amazonaws.com"):
 		// <AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/<REPOSITORY_NAME>
-		return ecr.New(&ecr.Config{
-			Profile: awsProfile,
-			Domain:  domain,
-		}), nil
+		return ecr.New(&ecr.Config{Profile: awsProfile, Domain: domain})
 	case domain == "gcr.io":
 		return gcr.New(), nil
 	case strings.HasSuffix(domain, "-docker.pkg.dev"):
