@@ -5,9 +5,8 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ecr"
+	"github.com/koki-develop/docker-tags/pkg/util/awsutil"
 )
 
 type Client struct {
@@ -28,14 +27,10 @@ func New(cfg *Config) *Client {
 }
 
 func (cl *Client) ListTags(name string) ([]string, error) {
-	cfg := &aws.Config{
-		Region: aws.String(cl.extractRegionFromDomain()),
-	}
-	if cl.profile != "" {
-		cfg.Credentials = credentials.NewSharedCredentials("", cl.profile)
-	}
-
-	sess, err := session.NewSession(cfg)
+	sess, err := awsutil.NewSession(&awsutil.SessionConfig{
+		Region:  cl.extractRegionFromDomain(),
+		Profile: cl.profile,
+	})
 	if err != nil {
 		return nil, err
 	}

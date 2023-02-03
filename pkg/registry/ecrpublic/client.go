@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ecrpublic"
+	"github.com/koki-develop/docker-tags/pkg/util/awsutil"
 	"github.com/koki-develop/docker-tags/pkg/util/dockerutil"
 )
 
@@ -47,14 +45,10 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 }
 
 func (cl *Client) auth(name string) (string, error) {
-	cfg := &aws.Config{
-		Region: aws.String("us-east-1"),
-	}
-	if cl.profile != "" {
-		cfg.Credentials = credentials.NewSharedCredentials("", cl.profile)
-	}
-
-	sess, err := session.NewSession(cfg)
+	sess, err := awsutil.NewSession(&awsutil.SessionConfig{
+		Profile: cl.profile,
+		Region:  "us-east-1",
+	})
 	if err != nil {
 		return "", err
 	}
