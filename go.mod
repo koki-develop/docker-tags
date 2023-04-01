@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/aws/aws-sdk-go v1.44.232
 	github.com/distribution/distribution v2.8.1+incompatible
-	github.com/docker/cli v20.10.23+incompatible
+	github.com/docker/cli v23.0.1+incompatible
 	github.com/spf13/cobra v1.6.1
 	golang.org/x/oauth2 v0.6.0
 )
@@ -35,6 +35,7 @@ require (
 	github.com/miekg/pkcs11 v1.0.3 // indirect
 	github.com/moby/sys/mount v0.3.3 // indirect
 	github.com/moby/sys/mountinfo v0.6.2 // indirect
+	github.com/moby/sys/sequential v0.5.0 // indirect
 	github.com/moby/term v0.0.0-20221205130635-1aeaba878587 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
