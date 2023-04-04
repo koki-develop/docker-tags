@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.44.233
 	github.com/distribution/distribution v2.8.1+incompatible
 	github.com/docker/cli v23.0.2+incompatible
-	github.com/spf13/cobra v1.6.1
+	github.com/spf13/cobra v1.7.0
 	golang.org/x/oauth2 v0.6.0
 )
 
@@ -26,7 +26,7 @@ require (
 	github.com/gogo/protobuf v1.1.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
-	github.com/inconshreveable/mousetrap v1.0.1 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/miekg/pkcs11 v1.0.2 // indirect
