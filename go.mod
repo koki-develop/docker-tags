@@ -3,7 +3,7 @@ module github.com/koki-develop/docker-tags
 go 1.19
 
 require (
-	github.com/aws/aws-sdk-go v1.44.245
+	github.com/aws/aws-sdk-go v1.44.256
 	github.com/distribution/distribution v2.8.1+incompatible
 	github.com/docker/cli v23.0.4+incompatible
 	github.com/spf13/cobra v1.7.0
