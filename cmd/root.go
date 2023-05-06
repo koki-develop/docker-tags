@@ -1,60 +1,23 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
-	"strings"
 
 	"github.com/distribution/distribution/reference"
 	"github.com/docker/cli/cli-plugins/manager"
 	"github.com/docker/cli/cli-plugins/plugin"
 	"github.com/docker/cli/cli/command"
-	"github.com/koki-develop/docker-tags/internal/registry/artifactregistry"
-	"github.com/koki-develop/docker-tags/internal/registry/dockerhub"
-	"github.com/koki-develop/docker-tags/internal/registry/ecr"
-	"github.com/koki-develop/docker-tags/internal/registry/ecrpublic"
-	"github.com/koki-develop/docker-tags/internal/registry/gcr"
+	"github.com/koki-develop/docker-tags/internal/registry"
 	"github.com/spf13/cobra"
 )
 
-type client interface {
-	ListTags(name string) ([]string, error)
-}
-
 var cliPlugin string = ""
-
-var (
-	_ client = (*dockerhub.Client)(nil)
-	_ client = (*ecr.Client)(nil)
-	_ client = (*ecrpublic.Client)(nil)
-	_ client = (*artifactregistry.Client)(nil)
-	_ client = (*gcr.Client)(nil)
-)
 
 var (
 	output     string
 	withName   bool
 	awsProfile string
 )
-
-func newClient(domain string) (client, error) {
-	switch {
-	case domain == "docker.io":
-		return dockerhub.New(), nil
-	case domain == "public.ecr.aws":
-		return ecrpublic.New(&ecrpublic.Config{Profile: awsProfile})
-	case strings.HasSuffix(domain, "amazonaws.com"):
-		// <AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/<REPOSITORY_NAME>
-		return ecr.New(&ecr.Config{Profile: awsProfile, Domain: domain})
-	case domain == "gcr.io":
-		return gcr.New(), nil
-	case strings.HasSuffix(domain, "-docker.pkg.dev"):
-		// <LOCATION>-docker.pkg.dev/<PROJECT>/<REPOSITORY>/<PACKAGE>
-		return artifactregistry.New(&artifactregistry.Config{Domain: domain}), nil
-	default:
-		return nil, fmt.Errorf("unsupported image repository: %s", domain)
-	}
-}
 
 var rootCmd = &cobra.Command{
 	Use:   "docker-tags [IMAGE]",
@@ -76,7 +39,7 @@ var rootCmd = &cobra.Command{
 		d := reference.Domain(named)
 		p := reference.Path(named)
 
-		cl, err := newClient(d)
+		cl, err := registry.New(d, &registry.Config{AWSProfile: awsProfile})
 		if err != nil {
 			return err
 		}
