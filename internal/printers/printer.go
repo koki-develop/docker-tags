@@ -37,3 +37,12 @@ func List() []string {
 	}
 	return names
 }
+
+func formatTags(params *PrintParameters) []string {
+	if params.WithName {
+		for i, t := range params.Tags {
+			params.Tags[i] = fmt.Sprintf("%s:%s", params.Image, t)
+		}
+	}
+	return params.Tags
+}

@@ -2,7 +2,6 @@ package printers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 )
 
@@ -17,19 +16,11 @@ func NewJSONPrinter() *JSONPrinter {
 }
 
 func (p *JSONPrinter) Print(w io.Writer, params *PrintParameters) error {
-	elms := make([]string, len(params.Tags))
-
-	if params.WithName {
-		for i, t := range params.Tags {
-			elms[i] = fmt.Sprintf("%s:%s", params.Image, t)
-		}
-	} else {
-		copy(elms, params.Tags)
-	}
+	tags := formatTags(params)
 
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
-	if err := enc.Encode(elms); err != nil {
+	if err := enc.Encode(tags); err != nil {
 		return err
 	}
 

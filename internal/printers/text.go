@@ -3,6 +3,7 @@ package printers
 import (
 	"fmt"
 	"io"
+	"strings"
 )
 
 var (
@@ -16,19 +17,9 @@ func NewTextPrinter() *TextPrinter {
 }
 
 func (p *TextPrinter) Print(w io.Writer, params *PrintParameters) error {
-	if params.WithName {
-		for _, t := range params.Tags {
-			if _, err := fmt.Fprintf(w, "%s:%s\n", params.Image, t); err != nil {
-				return err
-			}
-		}
-	} else {
-		for _, t := range params.Tags {
-			if _, err := fmt.Fprintln(w, t); err != nil {
-				return err
-			}
-		}
+	tags := formatTags(params)
+	if _, err := fmt.Fprintln(w, strings.Join(tags, "\n")); err != nil {
+		return err
 	}
-
 	return nil
 }
