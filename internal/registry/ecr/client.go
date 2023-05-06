@@ -10,7 +10,7 @@ import (
 	"github.com/koki-develop/docker-tags/internal/util/awsutil"
 )
 
-type Client struct {
+type Registry struct {
 	ecrAPI ecriface.ECRAPI
 }
 
@@ -19,7 +19,7 @@ type Config struct {
 	Domain  string
 }
 
-func New(cfg *Config) (*Client, error) {
+func New(cfg *Config) (*Registry, error) {
 	sess, err := awsutil.NewSession(&awsutil.SessionConfig{
 		Profile: cfg.Profile,
 		Region:  extractRegionFromDomain(cfg.Domain),
@@ -30,7 +30,7 @@ func New(cfg *Config) (*Client, error) {
 
 	svc := ecr.New(sess)
 
-	return &Client{ecrAPI: svc}, nil
+	return &Registry{ecrAPI: svc}, nil
 }
 
 func extractRegionFromDomain(domain string) string {
@@ -39,8 +39,8 @@ func extractRegionFromDomain(domain string) string {
 	return ds[len(ds)-3]
 }
 
-func (cl *Client) ListTags(name string) ([]string, error) {
-	out, err := cl.ecrAPI.DescribeImages(&ecr.DescribeImagesInput{
+func (r *Registry) ListTags(name string) ([]string, error) {
+	out, err := r.ecrAPI.DescribeImages(&ecr.DescribeImagesInput{
 		RepositoryName: aws.String(name),
 		Filter: &ecr.DescribeImagesFilter{
 			TagStatus: aws.String(ecr.TagStatusTagged),

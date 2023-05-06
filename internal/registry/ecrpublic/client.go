@@ -10,7 +10,7 @@ import (
 	"github.com/koki-develop/docker-tags/internal/util/dockerutil"
 )
 
-type Client struct {
+type Registry struct {
 	ecrpublicAPI ecrpubliciface.ECRPublicAPI
 
 	dockerClient *dockerutil.Client
@@ -21,7 +21,7 @@ type Config struct {
 	Profile string
 }
 
-func New(cfg *Config) (*Client, error) {
+func New(cfg *Config) (*Registry, error) {
 	sess, err := awsutil.NewSession(&awsutil.SessionConfig{
 		Profile: cfg.Profile,
 		Region:  "us-east-1",
@@ -32,7 +32,7 @@ func New(cfg *Config) (*Client, error) {
 
 	svc := ecrpublic.New(sess)
 
-	return &Client{
+	return &Registry{
 		ecrpublicAPI: svc,
 		dockerClient: dockerutil.New(&dockerutil.Config{
 			APIURL:  "https://public.ecr.aws",
@@ -42,13 +42,13 @@ func New(cfg *Config) (*Client, error) {
 	}, nil
 }
 
-func (cl *Client) ListTags(name string) ([]string, error) {
-	tkn, err := cl.auth(name)
+func (r *Registry) ListTags(name string) ([]string, error) {
+	tkn, err := r.auth(name)
 	if err != nil {
 		return nil, err
 	}
 
-	tags, err := cl.listTags(name, tkn)
+	tags, err := r.listTags(name, tkn)
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +56,8 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 	return tags, nil
 }
 
-func (cl *Client) auth(name string) (string, error) {
-	out, err := cl.ecrpublicAPI.GetAuthorizationToken(&ecrpublic.GetAuthorizationTokenInput{})
+func (r *Registry) auth(name string) (string, error) {
+	out, err := r.ecrpublicAPI.GetAuthorizationToken(&ecrpublic.GetAuthorizationTokenInput{})
 	if err != nil {
 		return "", err
 	}
@@ -69,8 +69,8 @@ type listTagsResponse struct {
 	Tags []string `json:"tags"`
 }
 
-func (cl *Client) listTags(name, tkn string) ([]string, error) {
-	req, err := cl.dockerClient.NewListTagsRequest(name)
+func (r *Registry) listTags(name, tkn string) ([]string, error) {
+	req, err := r.dockerClient.NewListTagsRequest(name)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (cl *Client) listTags(name, tkn string) ([]string, error) {
 	}
 
 	var tagsResp listTagsResponse
-	if err := cl.dockerClient.DoListTagsRequest(req, &tagsResp); err != nil {
+	if err := r.dockerClient.DoListTagsRequest(req, &tagsResp); err != nil {
 		return nil, err
 	}
 
