@@ -34,6 +34,6 @@ func New(domain string, cfg *Config) (Registry, error) {
 		// <LOCATION>-docker.pkg.dev/<PROJECT>/<REPOSITORY>/<PACKAGE>
 		return artifactregistry.New(&artifactregistry.Config{Domain: domain}), nil
 	default:
-		return nil, fmt.Errorf("unsupported image repository: %s", domain)
+		return nil, fmt.Errorf("unsupported image registry: %s", domain)
 	}
 }
