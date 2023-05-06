@@ -1,12 +1,15 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
+	"strings"
 
 	"github.com/distribution/distribution/reference"
 	"github.com/docker/cli/cli-plugins/manager"
 	"github.com/docker/cli/cli-plugins/plugin"
 	"github.com/docker/cli/cli/command"
+	"github.com/koki-develop/docker-tags/internal/printers"
 	"github.com/koki-develop/docker-tags/internal/registry"
 	"github.com/spf13/cobra"
 )
@@ -26,7 +29,7 @@ var rootCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		img := args[0]
 
-		prtr, err := newPrinter(output)
+		prtr, err := printers.Get(output)
 		if err != nil {
 			return err
 		}
@@ -49,8 +52,8 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		if err := prtr.Print(&printParams{
-			Name:     img,
+		if err := prtr.Print(os.Stdout, &printers.PrintParameters{
+			Image:    img,
 			Tags:     tags,
 			WithName: withName,
 		}); err != nil {
@@ -87,7 +90,7 @@ func init() {
 		rootCmd.Use = "tags [IMAGE]"
 	}
 
-	rootCmd.Flags().StringVarP(&output, "output", "o", "text", "output format (text|json)")
+	rootCmd.Flags().StringVarP(&output, "output", "o", "text", fmt.Sprintf("output format (%s)", strings.Join(printers.List(), "|")))
 	rootCmd.Flags().BoolVarP(&withName, "with-name", "n", false, "print with image name")
 	rootCmd.Flags().StringVar(&awsProfile, "aws-profile", "", "aws profile")
 }
