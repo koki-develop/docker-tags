@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/aws/aws-sdk-go v1.44.256
 	github.com/distribution/distribution v2.8.1+incompatible
-	github.com/docker/cli v23.0.4+incompatible
+	github.com/docker/cli v23.0.5+incompatible
 	github.com/spf13/cobra v1.7.0
 	golang.org/x/oauth2 v0.7.0
 )
