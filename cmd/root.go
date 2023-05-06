@@ -42,12 +42,12 @@ var rootCmd = &cobra.Command{
 		d := reference.Domain(named)
 		p := reference.Path(named)
 
-		cl, err := registry.New(d, &registry.Config{AWSProfile: awsProfile})
+		r, err := registry.New(d, &registry.Config{AWSProfile: awsProfile})
 		if err != nil {
 			return err
 		}
 
-		tags, err := cl.ListTags(p)
+		tags, err := r.ListTags(p)
 		if err != nil {
 			return err
 		}
