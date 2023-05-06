@@ -5,18 +5,18 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/koki-develop/docker-tags/pkg/util/dockerutil"
-	"github.com/koki-develop/docker-tags/pkg/util/googleutil"
+	"github.com/koki-develop/docker-tags/internal/util/dockerutil"
+	"github.com/koki-develop/docker-tags/internal/util/googleutil"
 )
 
-type Client struct {
+type Registry struct {
 	dockerClient *dockerutil.Client
 	googleClient *googleutil.Client
 	httpClient   *http.Client
 }
 
-func New() *Client {
-	return &Client{
+func New() *Registry {
+	return &Registry{
 		dockerClient: dockerutil.New(&dockerutil.Config{
 			APIURL:  "https://gcr.io",
 			AuthURL: "https://gcr.io/v2/token",
@@ -35,10 +35,10 @@ type manifest struct {
 	TimeUploadedMs string   `json:"timeUploadedMs"`
 }
 
-func (cl *Client) ListTags(name string) ([]string, error) {
-	tkn, _ := cl.auth(name)
+func (r *Registry) ListTags(name string) ([]string, error) {
+	tkn, _ := r.auth(name)
 
-	tags, err := cl.listTags(name, tkn)
+	tags, err := r.listTags(name, tkn)
 	if err != nil {
 		return nil, err
 	}
@@ -46,19 +46,19 @@ func (cl *Client) ListTags(name string) ([]string, error) {
 	return tags, nil
 }
 
-func (cl *Client) auth(name string) (string, error) {
-	tkn, err := cl.googleClient.Token()
+func (r *Registry) auth(name string) (string, error) {
+	tkn, err := r.googleClient.Token()
 	if err != nil {
 		return "", err
 	}
 
-	req, err := cl.dockerClient.NewAuthRequest(name)
+	req, err := r.dockerClient.NewAuthRequest(name)
 	if err != nil {
 		return "", err
 	}
 	req.SetBasicAuth("_token", tkn.AccessToken)
 
-	resp, err := cl.dockerClient.DoAuthRequest(req)
+	resp, err := r.dockerClient.DoAuthRequest(req)
 	if err != nil {
 		return "", err
 	}
@@ -66,8 +66,8 @@ func (cl *Client) auth(name string) (string, error) {
 	return resp.Token, nil
 }
 
-func (cl *Client) listTags(name, tkn string) ([]string, error) {
-	req, err := cl.dockerClient.NewListTagsRequest(name)
+func (r *Registry) listTags(name, tkn string) ([]string, error) {
+	req, err := r.dockerClient.NewListTagsRequest(name)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (cl *Client) listTags(name, tkn string) ([]string, error) {
 	}
 
 	var tagsResp listTagsResponse
-	if err := cl.dockerClient.DoListTagsRequest(req, &tagsResp); err != nil {
+	if err := r.dockerClient.DoListTagsRequest(req, &tagsResp); err != nil {
 		return nil, err
 	}
 

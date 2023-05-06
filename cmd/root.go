@@ -9,52 +9,18 @@ import (
 	"github.com/docker/cli/cli-plugins/manager"
 	"github.com/docker/cli/cli-plugins/plugin"
 	"github.com/docker/cli/cli/command"
-	"github.com/koki-develop/docker-tags/pkg/registry/artifactregistry"
-	"github.com/koki-develop/docker-tags/pkg/registry/dockerhub"
-	"github.com/koki-develop/docker-tags/pkg/registry/ecr"
-	"github.com/koki-develop/docker-tags/pkg/registry/ecrpublic"
-	"github.com/koki-develop/docker-tags/pkg/registry/gcr"
+	"github.com/koki-develop/docker-tags/internal/printers"
+	"github.com/koki-develop/docker-tags/internal/registry"
 	"github.com/spf13/cobra"
 )
 
-type client interface {
-	ListTags(name string) ([]string, error)
-}
-
 var cliPlugin string = ""
-
-var (
-	_ client = (*dockerhub.Client)(nil)
-	_ client = (*ecr.Client)(nil)
-	_ client = (*ecrpublic.Client)(nil)
-	_ client = (*artifactregistry.Client)(nil)
-	_ client = (*gcr.Client)(nil)
-)
 
 var (
 	output     string
 	withName   bool
 	awsProfile string
 )
-
-func newClient(domain string) (client, error) {
-	switch {
-	case domain == "docker.io":
-		return dockerhub.New(), nil
-	case domain == "public.ecr.aws":
-		return ecrpublic.New(&ecrpublic.Config{Profile: awsProfile})
-	case strings.HasSuffix(domain, "amazonaws.com"):
-		// <AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/<REPOSITORY_NAME>
-		return ecr.New(&ecr.Config{Profile: awsProfile, Domain: domain})
-	case domain == "gcr.io":
-		return gcr.New(), nil
-	case strings.HasSuffix(domain, "-docker.pkg.dev"):
-		// <LOCATION>-docker.pkg.dev/<PROJECT>/<REPOSITORY>/<PACKAGE>
-		return artifactregistry.New(&artifactregistry.Config{Domain: domain}), nil
-	default:
-		return nil, fmt.Errorf("unsupported image repository: %s", domain)
-	}
-}
 
 var rootCmd = &cobra.Command{
 	Use:   "docker-tags [IMAGE]",
@@ -63,7 +29,7 @@ var rootCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		img := args[0]
 
-		prtr, err := newPrinter(output)
+		prtr, err := printers.Get(output)
 		if err != nil {
 			return err
 		}
@@ -76,18 +42,18 @@ var rootCmd = &cobra.Command{
 		d := reference.Domain(named)
 		p := reference.Path(named)
 
-		cl, err := newClient(d)
+		r, err := registry.New(d, &registry.Config{AWSProfile: awsProfile})
 		if err != nil {
 			return err
 		}
 
-		tags, err := cl.ListTags(p)
+		tags, err := r.ListTags(p)
 		if err != nil {
 			return err
 		}
 
-		if err := prtr.Print(&printParams{
-			Name:     img,
+		if err := prtr.Print(os.Stdout, &printers.PrintParameters{
+			Image:    img,
 			Tags:     tags,
 			WithName: withName,
 		}); err != nil {
@@ -124,7 +90,7 @@ func init() {
 		rootCmd.Use = "tags [IMAGE]"
 	}
 
-	rootCmd.Flags().StringVarP(&output, "output", "o", "text", "output format (text|json)")
+	rootCmd.Flags().StringVarP(&output, "output", "o", "text", fmt.Sprintf("output format (%s)", strings.Join(printers.List(), "|")))
 	rootCmd.Flags().BoolVarP(&withName, "with-name", "n", false, "print with image name")
 	rootCmd.Flags().StringVar(&awsProfile, "aws-profile", "", "aws profile")
 }
