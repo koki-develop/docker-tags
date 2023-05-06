@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/koki-develop/docker-tags/pkg/util/dockerutil"
+	"github.com/koki-develop/docker-tags/internal/util/dockerutil"
 )
 
 type Client struct {

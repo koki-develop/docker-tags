@@ -6,8 +6,8 @@ import (
 
 	"github.com/aws/aws-sdk-go/service/ecrpublic"
 	"github.com/aws/aws-sdk-go/service/ecrpublic/ecrpubliciface"
-	"github.com/koki-develop/docker-tags/pkg/util/awsutil"
-	"github.com/koki-develop/docker-tags/pkg/util/dockerutil"
+	"github.com/koki-develop/docker-tags/internal/util/awsutil"
+	"github.com/koki-develop/docker-tags/internal/util/dockerutil"
 )
 
 type Client struct {

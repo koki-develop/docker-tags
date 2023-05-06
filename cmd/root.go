@@ -9,11 +9,11 @@ import (
 	"github.com/docker/cli/cli-plugins/manager"
 	"github.com/docker/cli/cli-plugins/plugin"
 	"github.com/docker/cli/cli/command"
-	"github.com/koki-develop/docker-tags/pkg/registry/artifactregistry"
-	"github.com/koki-develop/docker-tags/pkg/registry/dockerhub"
-	"github.com/koki-develop/docker-tags/pkg/registry/ecr"
-	"github.com/koki-develop/docker-tags/pkg/registry/ecrpublic"
-	"github.com/koki-develop/docker-tags/pkg/registry/gcr"
+	"github.com/koki-develop/docker-tags/internal/registry/artifactregistry"
+	"github.com/koki-develop/docker-tags/internal/registry/dockerhub"
+	"github.com/koki-develop/docker-tags/internal/registry/ecr"
+	"github.com/koki-develop/docker-tags/internal/registry/ecrpublic"
+	"github.com/koki-develop/docker-tags/internal/registry/gcr"
 	"github.com/spf13/cobra"
 )
 

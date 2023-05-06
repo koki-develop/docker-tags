@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ecr"
 	"github.com/aws/aws-sdk-go/service/ecr/ecriface"
-	"github.com/koki-develop/docker-tags/pkg/util/awsutil"
+	"github.com/koki-develop/docker-tags/internal/util/awsutil"
 )
 
 type Client struct {

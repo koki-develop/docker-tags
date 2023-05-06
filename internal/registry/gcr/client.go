@@ -1,14 +1,12 @@
-package artifactregistry
+package gcr
 
 import (
 	"fmt"
 	"net/http"
-	"net/url"
-	"path"
 	"sort"
 
-	"github.com/koki-develop/docker-tags/pkg/util/dockerutil"
-	"github.com/koki-develop/docker-tags/pkg/util/googleutil"
+	"github.com/koki-develop/docker-tags/internal/util/dockerutil"
+	"github.com/koki-develop/docker-tags/internal/util/googleutil"
 )
 
 type Client struct {
@@ -17,20 +15,24 @@ type Client struct {
 	httpClient   *http.Client
 }
 
-type Config struct {
-	Domain string
-}
-
-func New(cfg *Config) *Client {
-	apiURL := url.URL{Scheme: "https", Path: cfg.Domain}
-	authURL := url.URL{Scheme: "https", Path: path.Join(cfg.Domain, "/v2/token")}
+func New() *Client {
 	return &Client{
 		dockerClient: dockerutil.New(&dockerutil.Config{
-			APIURL:  apiURL.String(),
-			AuthURL: authURL.String(),
+			APIURL:  "https://gcr.io",
+			AuthURL: "https://gcr.io/v2/token",
 		}),
-		httpClient: new(http.Client),
+		googleClient: googleutil.New(),
+		httpClient:   new(http.Client),
 	}
+}
+
+type listTagsResponse struct {
+	Manifest map[string]manifest `json:"manifest"`
+}
+
+type manifest struct {
+	Tag            []string `json:"tag"`
+	TimeUploadedMs string   `json:"timeUploadedMs"`
 }
 
 func (cl *Client) ListTags(name string) ([]string, error) {
@@ -62,15 +64,6 @@ func (cl *Client) auth(name string) (string, error) {
 	}
 
 	return resp.Token, nil
-}
-
-type listTagsResponse struct {
-	Manifest map[string]manifest `json:"manifest"`
-}
-
-type manifest struct {
-	Tag            []string `json:"tag"`
-	TimeUploadedMs string   `json:"timeUploadedMs"`
 }
 
 func (cl *Client) listTags(name, tkn string) ([]string, error) {
