@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.44.298
 	github.com/distribution/distribution v2.8.1+incompatible
 	github.com/docker/cli v23.0.5+incompatible
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.0
 	golang.org/x/oauth2 v0.7.0
 	gopkg.in/yaml.v3 v3.0.1
 )
