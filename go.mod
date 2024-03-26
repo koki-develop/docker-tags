@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/aws/aws-sdk-go v1.44.298
 	github.com/distribution/distribution v2.8.1+incompatible
-	github.com/docker/cli v23.0.5+incompatible
+	github.com/docker/cli v25.0.5+incompatible
 	github.com/spf13/cobra v1.7.0
 	golang.org/x/oauth2 v0.7.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -17,6 +17,7 @@ require (
 	github.com/Microsoft/go-winio v0.6.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
+	github.com/distribution/reference v0.5.0 // indirect
 	github.com/docker/distribution v2.8.1+incompatible // indirect
 	github.com/docker/docker v23.0.3+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.7.0 // indirect
