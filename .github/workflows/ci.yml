@@ -13,7 +13,7 @@ jobs:
           go-version-file: go.mod
           cache: true
       - run: go test ./... -race -coverprofile=coverage.out -covermode=atomic
-      - uses: codecov/codecov-action@ab904c41d6ece82784817410c45d8b8c02684457 # v3.1.6
+      - uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d # v5.4.2
 
   build:
     runs-on: ubuntu-latest
