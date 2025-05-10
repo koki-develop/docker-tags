@@ -1,6 +1,6 @@
 module github.com/koki-develop/docker-tags
 
-go 1.19
+go 1.23.0
 
 toolchain go1.24.3
 
@@ -9,12 +9,12 @@ require (
 	github.com/distribution/distribution v2.8.1+incompatible
 	github.com/docker/cli v23.0.5+incompatible
 	github.com/spf13/cobra v1.9.1
-	golang.org/x/oauth2 v0.7.0
+	golang.org/x/oauth2 v0.30.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
-	cloud.google.com/go/compute/metadata v0.2.0 // indirect
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/Microsoft/go-winio v0.6.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -55,7 +55,6 @@ require (
 	golang.org/x/term v0.7.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.1.12 // indirect
-	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gotest.tools/v3 v3.4.0 // indirect
