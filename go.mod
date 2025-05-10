@@ -5,7 +5,7 @@ go 1.19
 toolchain go1.24.3
 
 require (
-	github.com/aws/aws-sdk-go v1.44.298
+	github.com/aws/aws-sdk-go v1.55.7
 	github.com/distribution/distribution v2.8.1+incompatible
 	github.com/docker/cli v23.0.5+incompatible
 	github.com/spf13/cobra v1.7.0
