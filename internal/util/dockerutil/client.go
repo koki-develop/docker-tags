@@ -87,7 +87,7 @@ func (cl *Client) do(req *http.Request, out interface{}) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		b, err := io.ReadAll(resp.Body)
