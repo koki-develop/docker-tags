@@ -2,6 +2,8 @@ module github.com/koki-develop/docker-tags
 
 go 1.19
 
+toolchain go1.24.3
+
 require (
 	github.com/aws/aws-sdk-go v1.44.298
 	github.com/distribution/distribution v2.8.1+incompatible
