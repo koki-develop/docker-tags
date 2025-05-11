@@ -44,8 +44,6 @@ $ go install github.com/koki-develop/docker-tags@latest
 $ git clone https://github.com/koki-develop/docker-tags.git
 $ cd docker-tags
 $ make
-$ mkdir -p $HOME/.docker/cli-plugins/
-$ mv ./dist/docker-tags $HOME/.docker/cli-plugins/
 $ docker tags --help
 ```
 
