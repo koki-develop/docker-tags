@@ -6,7 +6,7 @@ toolchain go1.24.3
 
 require (
 	github.com/aws/aws-sdk-go v1.55.7
-	github.com/distribution/distribution v2.8.3+incompatible
+	github.com/distribution/reference v0.6.0
 	github.com/docker/cli v23.0.15+incompatible
 	github.com/spf13/cobra v1.9.1
 	golang.org/x/oauth2 v0.30.0
@@ -19,7 +19,6 @@ require (
 	github.com/Microsoft/go-winio v0.6.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/distribution/reference v0.6.0 // indirect
 	github.com/docker/distribution v2.8.1+incompatible // indirect
 	github.com/docker/docker v23.0.3+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.7.0 // indirect
