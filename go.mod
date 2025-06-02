@@ -7,7 +7,7 @@ toolchain go1.24.3
 require (
 	github.com/aws/aws-sdk-go v1.55.7
 	github.com/distribution/reference v0.6.0
-	github.com/docker/cli v28.2.1+incompatible
+	github.com/docker/cli v28.2.2+incompatible
 	github.com/spf13/cobra v1.9.1
 	golang.org/x/oauth2 v0.30.0
 	gopkg.in/yaml.v3 v3.0.1
