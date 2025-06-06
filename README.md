@@ -14,14 +14,9 @@ It can also be used as a docker cli plugin.
 > For the [Amazon ECR](https://aws.amazon.com/ecr/) and [ECR Public](https://docs.aws.amazon.com/AmazonECR/latest/public/index.html), an AWS Profile must be configured.  
 > See [documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) for details.
 
-> [!NOTE]
-> For the private [Google Container Registry](https://cloud.google.com/container-registry) and [Google Artifact Registry](https://cloud.google.com/artifact-registry), you must set Google's Application Default Credentials.  
-> See [documentation](https://cloud.google.com/docs/authentication/application-default-credentials) for details.
-
 - [Docker Hub](https://hub.docker.com/)
 - [Amazon ECR](https://aws.amazon.com/ecr/)
 - [Amazon ECR Public](https://docs.aws.amazon.com/AmazonECR/latest/public/index.html)
-- [Google Container Registry](https://cloud.google.com/container-registry)
 - [Google Artifact Registry](https://cloud.google.com/artifact-registry)
 
 # Installation
