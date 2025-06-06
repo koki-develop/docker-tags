@@ -24,7 +24,7 @@ This is a CLI tool that fetches Docker image tags from various container registr
 **Registry Abstraction** (`internal/registry/`):
 - Common `Registry` interface with `ListTags(name string) ([]string, error)` method
 - Registry selection based on domain detection in `registry.New()`
-- Supported registries: Docker Hub, Amazon ECR/ECR Public, Google Container Registry, Google Artifact Registry
+- Supported registries: Docker Hub, Amazon ECR/ECR Public, Google Container Registry, GitHub Container Registry, Google Artifact Registry
 - Each registry implementation handles authentication and API communication differently
 
 **Output Formatting** (`internal/printers/`):
@@ -43,6 +43,7 @@ This is a CLI tool that fetches Docker image tags from various container registr
 - `public.ecr.aws` → ECR Public  
 - `*.amazonaws.com` → Private ECR
 - `gcr.io` → Google Container Registry
+- `ghcr.io` → GitHub Container Registry
 - `*-docker.pkg.dev` → Google Artifact Registry
 
 ### AWS Integration
@@ -50,3 +51,24 @@ Registry implementations for ECR services use AWS SDK with configurable profile 
 
 ### Docker CLI Plugin Mode
 When built with `-ldflags "-X github.com/koki-develop/docker-tags/cmd.cliPlugin=true"`, the tool integrates as `docker tags` command using Docker CLI plugin framework.
+
+## Registry Implementation Guidelines
+
+### Adding New Registry Support
+When adding support for a new container registry:
+
+1. **Create registry package** in `internal/registry/{name}/` with `Registry` struct implementing the `Registry` interface
+2. **Update domain detection** in `internal/registry/registry.go` to include new domain pattern
+3. **Follow error handling pattern** - use `io.ReadAll(resp.Body)` and return response content as error for non-OK HTTP responses (see `dockerutil.Client.do()`)
+4. **Authentication approaches**:
+   - **Anonymous/Public**: Direct token requests (GHCR, Docker Hub pattern)
+   - **Cloud Provider**: Use provider-specific clients then Docker registry tokens (GCR, ECR pattern)
+   - **dockerutil.Client**: Only when registry follows exact Docker Hub token format with `service` parameter
+
+### Conventional Commits
+This project uses conventional commit format: `type: description`
+- `feat:` for new features
+- `fix:` for bug fixes  
+- `docs:` for documentation
+- `ci:` for CI/CD changes
+- `refactor:` for code refactoring
