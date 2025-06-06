@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `make build-cli-plugin` - Build and install as Docker CLI plugin (installs to ~/.docker/cli-plugins/)
 - `golangci-lint run ./...` - Run linting (requires golangci-lint from mise.toml)
 - `goreleaser check` - Validate goreleaser configuration  
-- `goreleaser release --snapshot --clean` - Build release artifacts locally
+- `goreleaser release --snapshot --clean` - Build release artifacts locally (not used in CI)
 
 ### Tool Management
 - `mise install` - Install tools specified in mise.toml (Go 1.24.3, golangci-lint, goreleaser)
