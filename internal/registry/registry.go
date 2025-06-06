@@ -9,6 +9,7 @@ import (
 	"github.com/koki-develop/docker-tags/internal/registry/ecr"
 	"github.com/koki-develop/docker-tags/internal/registry/ecrpublic"
 	"github.com/koki-develop/docker-tags/internal/registry/gcr"
+	"github.com/koki-develop/docker-tags/internal/registry/ghcr"
 )
 
 type Registry interface {
@@ -30,6 +31,8 @@ func New(domain string, cfg *Config) (Registry, error) {
 		return ecr.New(&ecr.Config{Profile: cfg.AWSProfile, Domain: domain})
 	case domain == "gcr.io":
 		return gcr.New(), nil
+	case domain == "ghcr.io":
+		return ghcr.New(), nil
 	case strings.HasSuffix(domain, "-docker.pkg.dev"):
 		// <LOCATION>-docker.pkg.dev/<PROJECT>/<REPOSITORY>/<PACKAGE>
 		return artifactregistry.New(&artifactregistry.Config{Domain: domain}), nil

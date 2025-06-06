@@ -17,6 +17,7 @@ It can also be used as a docker cli plugin.
 - [Docker Hub](https://hub.docker.com/)
 - [Amazon ECR](https://aws.amazon.com/ecr/)
 - [Amazon ECR Public](https://docs.aws.amazon.com/AmazonECR/latest/public/index.html)
+- [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
 - [Google Artifact Registry](https://cloud.google.com/artifact-registry)
 
 # Installation
