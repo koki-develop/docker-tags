@@ -9,14 +9,14 @@ import (
 	"github.com/docker/cli/cli-plugins/manager"
 	"github.com/docker/cli/cli-plugins/plugin"
 	"github.com/docker/cli/cli/command"
+	"github.com/spf13/cobra"
+
 	"github.com/koki-develop/docker-tags/internal/printers"
 	"github.com/koki-develop/docker-tags/internal/registry"
-	"github.com/spf13/cobra"
 )
 
-var cliPlugin string = ""
-
 var (
+	cliPlugin  = ""
 	output     string
 	withName   bool
 	awsProfile string
