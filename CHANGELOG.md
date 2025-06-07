@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.11.0](https://github.com/koki-develop/docker-tags/compare/v0.10.1...v0.11.0) (2025-06-07)
+
+
+### Features
+
+* add comprehensive unit test suite ([#85](https://github.com/koki-develop/docker-tags/issues/85)) ([2abd652](https://github.com/koki-develop/docker-tags/commit/2abd6527a3dd9aa966a69f741ee81846ebf244cb))
+* add support for GitHub Container Registry (ghcr.io) ([#82](https://github.com/koki-develop/docker-tags/issues/82)) ([7db7984](https://github.com/koki-develop/docker-tags/commit/7db798405a610ac75e1a9b38f726d2f01ab94627))
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/docker/cli to v28.2.1+incompatible ([#75](https://github.com/koki-develop/docker-tags/issues/75)) ([73a20b8](https://github.com/koki-develop/docker-tags/commit/73a20b85a97f9f9a506cb124db184137f53319f4))
+
 ## [0.10.1](https://github.com/koki-develop/docker-tags/compare/v0.10.0...v0.10.1) (2025-05-11)
 
 
