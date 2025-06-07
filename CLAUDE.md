@@ -17,6 +17,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Tool Management
 - `mise install` - Install tools specified in mise.toml (Go 1.24.3, golangci-lint, goreleaser)
 
+### Code Formatting and Modernization
+- `goimports -w .` - Format Go code and organize imports
+- `modernize -test -fix ./...` - Apply modern Go patterns (e.g., interface{} → any)
+
 ## Architecture Overview
 
 This is a CLI tool that fetches Docker image tags from various container registries. The tool can run standalone or as a Docker CLI plugin.
