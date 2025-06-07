@@ -20,10 +20,10 @@ func (cl *Client) Token() (*oauth2.Token, error) {
 		return nil, err
 	}
 
-	tkn, err := cred.TokenSource.Token()
+	token, err := cred.TokenSource.Token()
 	if err != nil {
 		return nil, err
 	}
 
-	return tkn, nil
+	return token, nil
 }

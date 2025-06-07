@@ -2,7 +2,6 @@ package gcr
 
 import (
 	"fmt"
-	"net/http"
 	"sort"
 
 	"github.com/koki-develop/docker-tags/internal/util/dockerutil"
@@ -12,7 +11,6 @@ import (
 type Registry struct {
 	dockerClient *dockerutil.Client
 	googleClient *googleutil.Client
-	httpClient   *http.Client
 }
 
 func New() *Registry {
@@ -22,7 +20,6 @@ func New() *Registry {
 			AuthURL: "https://gcr.io/v2/token",
 		}),
 		googleClient: googleutil.New(),
-		httpClient:   new(http.Client),
 	}
 }
 
@@ -36,9 +33,9 @@ type manifest struct {
 }
 
 func (r *Registry) ListTags(name string) ([]string, error) {
-	tkn, _ := r.auth(name)
+	token, _ := r.auth(name)
 
-	tags, err := r.listTags(name, tkn)
+	tags, err := r.listTags(name, token)
 	if err != nil {
 		return nil, err
 	}
@@ -66,13 +63,13 @@ func (r *Registry) auth(name string) (string, error) {
 	return resp.Token, nil
 }
 
-func (r *Registry) listTags(name, tkn string) ([]string, error) {
+func (r *Registry) listTags(name, token string) ([]string, error) {
 	req, err := r.dockerClient.NewListTagsRequest(name)
 	if err != nil {
 		return nil, err
 	}
-	if tkn != "" {
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
+	if token != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 	}
 
 	var tagsResp listTagsResponse
