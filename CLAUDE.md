@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Building and Testing
 - `go test ./... -race -coverprofile=coverage.out -covermode=atomic` - Run tests with race detection and coverage
+- `go test ./internal/printers/... -v` - Run specific package tests with verbose output
+- `go tool cover -html=coverage.out -o coverage.html` - Generate HTML coverage report
 - `go build` - Build the CLI tool
 - `make build-cli-plugin` - Build and install as Docker CLI plugin (installs to ~/.docker/cli-plugins/)
 - `golangci-lint run ./...` - Run linting (requires golangci-lint from mise.toml)
@@ -55,6 +57,8 @@ This is a CLI tool that fetches Docker image tags from various container registr
 ### Code Consistency Patterns
 - Import organization: standard library → third-party packages → local packages
 - Comments should explain "why" not "what" (e.g., "// Reverse tags to show most recent first")
+- Use modern Go patterns: `any` instead of `interface{}` for Go 1.18+
+- Test naming conventions: `Test<StructName>_<MethodName>` for methods, `Test_<functionName>` for functions
 
 ### AWS Integration
 Registry implementations for ECR services use AWS SDK with configurable profile support via `--aws-profile` flag.
@@ -77,6 +81,24 @@ When adding support for a new container registry:
 5. **Variable naming**: Use consistent `token` naming for authentication tokens, avoid abbreviations like `tkn`
 6. **Error handling**: Follow existing patterns - use `io.ReadAll(resp.Body)` for HTTP error responses
 
+## Testing Guidelines
+
+### Test Coverage Strategy
+- Focus on unit tests for core business logic in `internal/` packages
+- Current coverage: ~27% overall, with high coverage on critical components:
+  - `internal/printers/`: 91.2% coverage (output formatting)
+  - `internal/registry/`: 100% coverage (domain detection logic)
+  - `internal/util/dockerutil/`: 87.5% coverage (HTTP client utilities)
+- Individual registry implementations are not unit tested (require complex HTTP mocking)
+- Uses `github.com/stretchr/testify` for assertions and test utilities
+
+### Test Implementation Patterns
+- Use table-driven tests for multiple scenarios
+- Test both success and error cases for critical functions
+- Focus on testing interfaces and public APIs rather than implementation details
+- Use `assert.IsType()` for concrete type verification in factory patterns
+- Use `assert.Implements()` to verify interface compliance
+
 ### Conventional Commits
 This project uses conventional commit format: `type: description`
 - `feat:` for new features
@@ -84,3 +106,4 @@ This project uses conventional commit format: `type: description`
 - `docs:` for documentation
 - `ci:` for CI/CD changes
 - `refactor:` for code refactoring
+- `test:` for adding or updating tests
