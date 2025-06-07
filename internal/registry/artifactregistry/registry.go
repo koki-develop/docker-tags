@@ -2,7 +2,6 @@ package artifactregistry
 
 import (
 	"fmt"
-	"net/http"
 	"net/url"
 	"path"
 	"sort"
@@ -14,7 +13,6 @@ import (
 type Registry struct {
 	dockerClient *dockerutil.Client
 	googleClient *googleutil.Client
-	httpClient   *http.Client
 }
 
 type Config struct {
@@ -29,14 +27,14 @@ func New(cfg *Config) *Registry {
 			APIURL:  apiURL.String(),
 			AuthURL: authURL.String(),
 		}),
-		httpClient: new(http.Client),
+		googleClient: googleutil.New(),
 	}
 }
 
 func (r *Registry) ListTags(name string) ([]string, error) {
-	tkn, _ := r.auth(name)
+	token, _ := r.auth(name)
 
-	tags, err := r.listTags(name, tkn)
+	tags, err := r.listTags(name, token)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +43,7 @@ func (r *Registry) ListTags(name string) ([]string, error) {
 }
 
 func (r *Registry) auth(name string) (string, error) {
-	tkn, err := r.googleClient.Token()
+	googleToken, err := r.googleClient.Token()
 	if err != nil {
 		return "", err
 	}
@@ -54,7 +52,7 @@ func (r *Registry) auth(name string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req.SetBasicAuth("_token", tkn.AccessToken)
+	req.SetBasicAuth("_token", googleToken.AccessToken)
 
 	resp, err := r.dockerClient.DoAuthRequest(req)
 	if err != nil {
@@ -73,13 +71,13 @@ type manifest struct {
 	TimeUploadedMs string   `json:"timeUploadedMs"`
 }
 
-func (r *Registry) listTags(name, tkn string) ([]string, error) {
+func (r *Registry) listTags(name, token string) ([]string, error) {
 	req, err := r.dockerClient.NewListTagsRequest(name)
 	if err != nil {
 		return nil, err
 	}
-	if tkn != "" {
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
+	if token != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 	}
 
 	var tagsResp listTagsResponse

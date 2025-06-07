@@ -2,7 +2,6 @@ package ecrpublic
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/aws/aws-sdk-go/service/ecrpublic"
 	"github.com/aws/aws-sdk-go/service/ecrpublic/ecrpubliciface"
@@ -12,9 +11,7 @@ import (
 
 type Registry struct {
 	ecrpublicAPI ecrpubliciface.ECRPublicAPI
-
 	dockerClient *dockerutil.Client
-	httpClient   *http.Client
 }
 
 type Config struct {
@@ -38,17 +35,16 @@ func New(cfg *Config) (*Registry, error) {
 			APIURL:  "https://public.ecr.aws",
 			AuthURL: "https://public.ecr.aws/v2/token",
 		}),
-		httpClient: new(http.Client),
 	}, nil
 }
 
 func (r *Registry) ListTags(name string) ([]string, error) {
-	tkn, err := r.auth(name)
+	token, err := r.auth(name)
 	if err != nil {
 		return nil, err
 	}
 
-	tags, err := r.listTags(name, tkn)
+	tags, err := r.listTags(name, token)
 	if err != nil {
 		return nil, err
 	}
@@ -69,13 +65,13 @@ type listTagsResponse struct {
 	Tags []string `json:"tags"`
 }
 
-func (r *Registry) listTags(name, tkn string) ([]string, error) {
+func (r *Registry) listTags(name, token string) ([]string, error) {
 	req, err := r.dockerClient.NewListTagsRequest(name)
 	if err != nil {
 		return nil, err
 	}
-	if tkn != "" {
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
+	if token != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 	}
 
 	var tagsResp listTagsResponse

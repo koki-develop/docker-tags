@@ -29,12 +29,12 @@ type listTagsResponse struct {
 }
 
 func (r *Registry) ListTags(name string) ([]string, error) {
-	tkn, err := r.auth(name)
+	token, err := r.auth(name)
 	if err != nil {
 		return nil, err
 	}
 
-	tags, err := r.listTags(name, tkn)
+	tags, err := r.listTags(name, token)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (r *Registry) auth(name string) (string, error) {
 	return tokenResp.Token, nil
 }
 
-func (r *Registry) listTags(name, tkn string) ([]string, error) {
+func (r *Registry) listTags(name, token string) ([]string, error) {
 	u, err := url.ParseRequestURI("https://ghcr.io")
 	if err != nil {
 		return nil, err
@@ -90,7 +90,7 @@ func (r *Registry) listTags(name, tkn string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	resp, err := r.httpClient.Do(req)
 	if err != nil {
@@ -112,6 +112,7 @@ func (r *Registry) listTags(name, tkn string) ([]string, error) {
 	}
 
 	tags := tagsResp.Tags
+	// Reverse tags to show most recent first
 	for i, j := 0, len(tags)-1; i < j; i, j = i+1, j-1 {
 		tags[i], tags[j] = tags[j], tags[i]
 	}

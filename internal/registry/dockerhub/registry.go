@@ -2,14 +2,12 @@ package dockerhub
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/koki-develop/docker-tags/internal/util/dockerutil"
 )
 
 type Registry struct {
 	dockerClient *dockerutil.Client
-	httpClient   *http.Client
 }
 
 func New() *Registry {
@@ -18,7 +16,6 @@ func New() *Registry {
 			APIURL:  "https://registry.hub.docker.com",
 			AuthURL: "https://auth.docker.io/token",
 		}),
-		httpClient: new(http.Client),
 	}
 }
 
@@ -66,8 +63,8 @@ func (r *Registry) listTags(name, tkn string) ([]string, error) {
 		return nil, err
 	}
 
-	// reverse
 	tags := tagsResp.Tags
+	// Reverse tags to show most recent first
 	for i, j := 0, len(tags)-1; i < j; i, j = i+1, j-1 {
 		tags[i], tags[j] = tags[j], tags[i]
 	}

@@ -11,6 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `golangci-lint run ./...` - Run linting (requires golangci-lint from mise.toml)
 - `goreleaser check` - Validate goreleaser configuration  
 - `goreleaser release --snapshot --clean` - Build release artifacts locally (not used in CI)
+- `go run . <image>` - Test CLI with specific Docker image (e.g., `go run . alpine`)
+- `go run . <image> --output json` - Test with different output formats
 
 ### Tool Management
 - `mise install` - Install tools specified in mise.toml (Go 1.24.3, golangci-lint, goreleaser)
@@ -46,6 +48,10 @@ This is a CLI tool that fetches Docker image tags from various container registr
 - `ghcr.io` → GitHub Container Registry
 - `*-docker.pkg.dev` → Google Artifact Registry
 
+### Code Consistency Patterns
+- Import organization: standard library → third-party packages → local packages
+- Comments should explain "why" not "what" (e.g., "// Reverse tags to show most recent first")
+
 ### AWS Integration
 Registry implementations for ECR services use AWS SDK with configurable profile support via `--aws-profile` flag.
 
@@ -64,6 +70,8 @@ When adding support for a new container registry:
    - **Anonymous/Public**: Direct token requests (GHCR, Docker Hub pattern)
    - **Cloud Provider**: Use provider-specific clients then Docker registry tokens (GCR, ECR pattern)
    - **dockerutil.Client**: Only when registry follows exact Docker Hub token format with `service` parameter
+5. **Variable naming**: Use consistent `token` naming for authentication tokens, avoid abbreviations like `tkn`
+6. **Error handling**: Follow existing patterns - use `io.ReadAll(resp.Body)` for HTTP error responses
 
 ### Conventional Commits
 This project uses conventional commit format: `type: description`
