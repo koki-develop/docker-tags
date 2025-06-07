@@ -75,14 +75,14 @@ func (cl *Client) NewListTagsRequest(name string) (*http.Request, error) {
 	return req, nil
 }
 
-func (cl *Client) DoListTagsRequest(req *http.Request, out interface{}) error {
+func (cl *Client) DoListTagsRequest(req *http.Request, out any) error {
 	if err := cl.do(req, out); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (cl *Client) do(req *http.Request, out interface{}) error {
+func (cl *Client) do(req *http.Request, out any) error {
 	resp, err := cl.httpClient.Do(req)
 	if err != nil {
 		return err

@@ -19,7 +19,7 @@ func Test_New(t *testing.T) {
 		name          string
 		domain        string
 		config        *Config
-		expectedType  interface{}
+		expectedType  any
 		expectError   bool
 		errorContains string
 	}{
@@ -98,5 +98,3 @@ func Test_New(t *testing.T) {
 		})
 	}
 }
-
-
