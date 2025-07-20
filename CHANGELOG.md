@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/koki-develop/docker-tags/compare/v0.11.0...v0.11.1) (2025-07-20)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/docker/cli to v28.3.2+incompatible ([#77](https://github.com/koki-develop/docker-tags/issues/77)) ([379e453](https://github.com/koki-develop/docker-tags/commit/379e453128d177ceb0b55d34c1264ddae53d428e))
+
 ## [0.11.0](https://github.com/koki-develop/docker-tags/compare/v0.10.1...v0.11.0) (2025-06-07)
 
 
