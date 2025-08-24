@@ -29,6 +29,7 @@ jobs:
           claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           allowed-tools: |
             WebFetch(domain:github.com)
+            WebFetch(domain:docs.github.com)
             WebFetch(domain:raw.githubusercontent.com)
             WebFetch(domain:pkg.go.dev)
             WebFetch(domain:golang.org)
