@@ -9,7 +9,7 @@ require (
 	github.com/distribution/reference v0.6.0
 	github.com/docker/cli v28.3.3+incompatible
 	github.com/spf13/cobra v1.9.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	golang.org/x/oauth2 v0.30.0
 	gopkg.in/yaml.v3 v3.0.1
 )
