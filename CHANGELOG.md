@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.11.1](https://github.com/koki-develop/docker-tags/compare/v0.11.0...v0.11.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/docker/cli to v28.3.2+incompatible ([#77](https://github.com/koki-develop/docker-tags/issues/77)) ([379e453](https://github.com/koki-develop/docker-tags/commit/379e453128d177ceb0b55d34c1264ddae53d428e))
+* **deps:** update module github.com/docker/cli to v28.3.3+incompatible ([#92](https://github.com/koki-develop/docker-tags/issues/92)) ([d5b92fb](https://github.com/koki-develop/docker-tags/commit/d5b92fbe43aa7b47e7393b7f03baea6af04d5f99))
+* **deps:** update module github.com/stretchr/testify to v1.11.1 ([#102](https://github.com/koki-develop/docker-tags/issues/102)) ([8d3c45f](https://github.com/koki-develop/docker-tags/commit/8d3c45f75adf2c85a0834ccc3486166ff294eff7))
+
 ## [0.11.0](https://github.com/koki-develop/docker-tags/compare/v0.10.1...v0.11.0) (2025-06-07)
 
 
